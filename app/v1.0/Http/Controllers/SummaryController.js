@@ -32,6 +32,7 @@
 
 		return Math.round( d * 1000 );
 	}
+	
  	/** 
  	  * Total Inspeksi Jarak
 	  * --------------------------------------------------------------------
@@ -81,15 +82,19 @@
 			message: "Success!",
 			data: {
 				distance_meter: total_meter_distance,
-				distance_km: ( total_meter_distance / 1000 ),
+				distance_km: parseInt( ( total_meter_distance / 1000 ) ),
 				duration: 0
 			}
 		} );
 	};
 
  	/** 
- 	  * Total Inspeksi
+ 	  * Total Inspeksi : Per-Minggu
 	  * --------------------------------------------------------------------
+	  * Skenario : 
+	  * 1. Mobile kirim data tanggal
+	  * 2. Service terima data tanggal, dan compare dengan table TR_SUMMARY
+	  *	   berdasarkan.
 	*/
  	exports.total_inspeksi = async ( req, res ) => {
  		var date = new Date();
@@ -105,7 +110,7 @@
 				"$group": {
 					"_id": {
 						"WERKS": "$WERKS",
-						"AFD_CODE":"$AFD_CODE",
+						"AFD_CODE": "$AFD_CODE",
 						"BLOCK_CODE": "$BLOCK_CODE"
 					},
 					"count": {

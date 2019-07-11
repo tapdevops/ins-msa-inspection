@@ -1,5 +1,3 @@
-
-
 /*
  |--------------------------------------------------------------------------
  | App Setup
@@ -90,31 +88,50 @@
 				}
 			},
 			{
+				"$lookup": {
+					"from": "TR_TRACK_INSPECTION",
+					"localField": "BLOCK_INSPECTION_CODE",
+					"foreignField": "BLOCK_INSPECTION_CODE",
+					"as": "TRACK"
+				}
+			},
+			{
 				"$project": {
-				"WERKS": 1,
-				"AFD_CODE": 1,
-				"BLOCK_CODE": 1,
-				"WERKS_AFD_BLOCK_CODE": {
-					"$concat": [ "$WERKS", "$AFD_CODE", "$BLOCK_CODE" ]
-				},
-				"INSPECTION_TYPE": 1,
-				"INSPECTION_DATE": 1,
-				"INSPECTION_SCORE": 1, 
-				"INSPECTION_RESULT": 1,
-				"INSERT_TIME": 1,
-				"INSERT_USER": 1,
-				"AREAL": 1,
-				"LAT_START_INSPECTION": 1,
-				"LONG_START_INSPECTION": 1,
-				"LAT_END_INSPECTION": 1,
-				"LONG_END_INSPECTION": 1,
-				"DETAIL.BLOCK_INSPECTION_CODE_D": 1,
-				"DETAIL.CONTENT_INSPECTION_CODE": 1,
-				"DETAIL.VALUE": 1
+					"_id": 0,
+					"WERKS": 1,
+					"AFD_CODE": 1,
+					"BLOCK_CODE": 1,
+					"BLOCK_INSPECTION_CODE": 1,
+					"INSPECTION_TYPE": 1,
+					"INSPECTION_DATE": 1,
+					"INSPECTION_SCORE": 1, 
+					"INSPECTION_RESULT": 1,
+					"INSERT_TIME": 1,
+					"INSERT_USER": 1,
+					"AREAL": 1,
+					"LAT_START_INSPECTION": 1,
+					"LONG_START_INSPECTION": 1,
+					"LAT_END_INSPECTION": 1,
+					"LONG_END_INSPECTION": 1,
+					"DETAIL.BLOCK_INSPECTION_CODE_D": 1,
+					"DETAIL.CONTENT_INSPECTION_CODE": 1,
+					"DETAIL.VALUE": 1,
+					"TRACK.TRACK_INSPECTION_CODE": 1,
+					"TRACK.DATE_TRACK": 1,
+					"TRACK.LAT_TRACK": 1,
+					"TRACK.LONG_TRACK": 1
+				}
+			},
+			{
+				"$match": {
+					"INSPECTION_DATE": {
+						"$gte": parseInt( req.params.first_date ),
+						"$lte": parseInt( req.params.end_date )
+					}
 				}
 			}
-		] ).limit( 10 );
-		
+		] );
+
  		return res.json( {
  			status: true,
  			message: "Success!",
