@@ -13,6 +13,7 @@
 	// Libraries
  	const HelperLib = require( _directory_base + '/app/v1.0/Http/Libraries/HelperLib.js' );
 
+
 /*
  |--------------------------------------------------------------------------
  | Versi 1.0.0
@@ -129,7 +130,10 @@
 						"$lte": parseInt( req.params.end_date )
 					}
 				}
-			}
+			},
+			// {
+			// 	"$limit": 10
+			// }
 		] );
 
  		return res.json( {
