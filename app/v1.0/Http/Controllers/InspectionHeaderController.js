@@ -26,7 +26,7 @@
 	 * Untuk menyimpan data baru
 	 * --------------------------------------------------------------------------
 	 */
-	exports.create = ( req, res ) => {
+	exports.create = async ( req, res ) => {
 		
 		var rules = [
 			{ "name": "BLOCK_INSPECTION_CODE", "value": req.body.BLOCK_INSPECTION_CODE, "rules": "required|alpha_numeric" },
@@ -47,9 +47,7 @@
 			{ "name": "INSERT_USER", "value": req.body.INSERT_USER, "rules": "required|alpha_numeric" },
 			{ "name": "INSERT_TIME", "value": req.body.INSERT_TIME.toString(), "rules": "required|exact_length(14)|numeric" }
 		];
-
 		var run_validator = Validator.run( rules );
-		console.log( run_validator.error_lists );
 
 		if ( run_validator.status == false ) {
 			res.json( {
@@ -60,6 +58,17 @@
 		}
 		else {
 			var auth = req.auth;
+
+			// Check Block Inspection Code, jika sudah ada maka returnnya false.
+			var check_inspeksi = await InspectionHModel.findOne( { "BLOCK_INSPECTION_CODE": req.body.BLOCK_INSPECTION_CODE } ).count();
+			if ( check_inspeksi > 0 ) {
+				return res.send( {
+					status: false,
+					message: 'Block Inspection Code ' + req.body.BLOCK_INSPECTION_CODE + ' tidak tersedia.',
+					data: {}
+				} );
+			}
+
 			const set_data = new InspectionHModel( {
 				BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE,
 				WERKS: req.body.WERKS,
