@@ -72,8 +72,8 @@
 			app.get( '/api/v1.0/report', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.InspectionReportController.find );
 
 			// Summary
-			app.get( '/api/v1.0/summary/total-inspeksi', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.SummaryController.total_inspeksi );
-			app.get( '/api/v1.0/summary/total-jarak', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.SummaryController.total_jarak );
+			app.post( '/api/v1.0/summary/total-inspeksi', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.SummaryController.total_inspeksi );
+			// app.get( '/api/v1.0/summary/total-jarak', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.SummaryController.total_jarak );
 			
 			// Export
 			app.get( '/api/v1.0/export/premi/:first_date/:end_date', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.ExportController.premi );
