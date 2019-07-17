@@ -97,6 +97,8 @@
 	  *	   berdasarkan.
 	*/
  	exports.total_inspeksi = async ( req, res ) => {
+
+ 		// Inspeksi
  		var date = new Date();
  			date.setDate( date.getDate() - 1 );
  		var max_inspection_date = parseInt( MomentTimezone( date ).tz( "Asia/Jakarta" ).format( "YYYYMMDD" ) + '235959' );
@@ -120,17 +122,71 @@
 			}
 		] );
 		var results = {
-			total_inspeksi_baris: 0,
-			total_block: 0
+			inspeksi: {
+				total_inspeksi: 0,
+				total_baris: 0,
+				target: 10 // Masih hardcode
+			},
+			berjalan_kaki: {
+				distance_meter: 1200,
+				distance_km: 1.2,
+				duration: 125
+			}
 		};
 
 		if ( inspection_test.length > 0 ) {
-			results.total_block = inspection_test.length;
+			results.inspeksi.total_baris = inspection_test.length;
 			
 			inspection_test.forEach( function( dt ) {
-				results.total_inspeksi_baris = results.total_inspeksi_baris + dt.count;
+				results.inspeksi.total_inspeksi = results.inspeksi.total_inspeksi + dt.count;
 			} );
 		}
+
+		// Berjalan Kaki
+		var query = await InspectionTrackingModel.aggregate( [
+			{
+				"$sort": {
+					"_id": 1
+				}
+			},
+			{
+				"$match": {
+					"INSERT_USER": req.auth.USER_AUTH_CODE
+				}
+			},
+			{
+				"$project": {
+					"_id": 0,
+					"TRACK_INSPECTION_CODE": 1,
+					"BLOCK_INSPECTION_CODE": 1,
+					"DATE_TRACK": 1,
+					"LAT_TRACK": 1,
+					"LONG_TRACK": 1
+				}
+			}
+		] );
+
+		var total_meter_distance = 0;
+		var total_km_distance = 0;
+
+		if ( query.length > 0 ) {
+			for ( var i = 0; i <= ( query.length - 1 ); i++ ) {
+				if ( i < ( query.length - 1 ) ) {
+					var j = i + 1;
+					var track_1 = query[i];
+					var track_2 = query[j];
+					var compute_distance = exports.compute_distance( track_1.LAT_TRACK, track_1.LONG_TRACK, track_2.LAT_TRACK, track_2.LONG_TRACK );
+					console.log(compute_distance);
+					total_meter_distance += compute_distance;
+				}
+			}
+		}
+
+		// results.berjalan_kaki.distance_meter = total_meter_distance;
+		// results.berjalan_kaki.distance_km = parseInt( ( total_meter_distance / 1000 ) );
+		results.berjalan_kaki.distance_meter = 1200;
+		results.berjalan_kaki.distance_km = 1.2;
+		results.berjalan_kaki.duration = 125;
 
  		return res.status( 200 ).json( {
  			status: true,

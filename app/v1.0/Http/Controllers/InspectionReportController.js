@@ -27,7 +27,6 @@
 		var query = {};
 			query.DELETE_USER = "";
 
-
 		console.log( query );
 		
 		// Find By Region Code
