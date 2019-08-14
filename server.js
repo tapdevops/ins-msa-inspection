@@ -66,12 +66,13 @@
 	} );
 
 	// Server Running Message
-	app.listen( parseInt( config.app.port[config.app.env] ), () => {
+	var server = app.listen( parseInt( config.app.port[config.app.env] ), () => {
 		console.log( "Server :" );
 		console.log( "\tStatus \t\t: OK" );
 		console.log( "\tService \t: " + config.app.name + " (" + config.app.env + ")" );
 		console.log( "\tPort \t\t: " + config.app.port[config.app.env] );
 	} );
+	server.timeout = 100000;
 
 	// Routing
 	require( './routes/api.js' )( app );

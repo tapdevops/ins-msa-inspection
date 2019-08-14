@@ -10,6 +10,7 @@
 	const InspectionDModel = require( _directory_base + '/app/v1.0/Http/Models/InspectionDModel.js' );
 	const InspectionHModel = require( _directory_base + '/app/v1.0/Http/Models/InspectionHModel.js' );
 	const InspectionTrackingModel = require( _directory_base + '/app/v1.0/Http/Models/InspectionTrackingModel.js' );
+	const SummaryWeeklyModel = require( _directory_base + '/app/v1.0/Http/Models/SummaryWeeklyModel.js' );
 
 	// Node Module
 	const MomentTimezone = require( 'moment-timezone' );
@@ -32,61 +33,6 @@
 
 		return Math.round( d * 1000 );
 	}
-	
- 	/** 
- 	  * Total Inspeksi Jarak
-	  * --------------------------------------------------------------------
-	*/
-	// exports.total_jarak = async ( req, res ) => {
-	// 	var query = await InspectionTrackingModel.aggregate( [
-	// 		{
-	// 			"$sort": {
-	// 				"_id": 1
-	// 			}
-	// 		},
-	// 		{
-	// 			"$match": {
-	// 				"INSERT_USER": req.auth.USER_AUTH_CODE
-	// 			}
-	// 		},
-	// 		{
-	// 			"$project": {
-	// 				"_id": 0,
-	// 				"TRACK_INSPECTION_CODE": 1,
-	// 				"BLOCK_INSPECTION_CODE": 1,
-	// 				"DATE_TRACK": 1,
-	// 				"LAT_TRACK": 1,
-	// 				"LONG_TRACK": 1
-	// 			}
-	// 		}
-	// 	] );
-	// 	// console.log(query);
-	// 	var total_meter_distance = 0;
-	// 	var total_km_distance = 0;
-
-	// 	if ( query.length > 0 ) {
-	// 		for ( var i = 0; i <= ( query.length - 1 ); i++ ) {
-	// 			if ( i < ( query.length - 1 ) ) {
-	// 				var j = i + 1;
-	// 				var track_1 = query[i];
-	// 				var track_2 = query[j];
-	// 				var compute_distance = exports.compute_distance( track_1.LAT_TRACK, track_1.LONG_TRACK, track_2.LAT_TRACK, track_2.LONG_TRACK );
-	// 				console.log(compute_distance);
-	// 				total_meter_distance += compute_distance;
-	// 			}
-	// 		}
-	// 	}
-		
-	// 	return res.status( 200 ).json( {
-	// 		status: true,
-	// 		message: "Success!",
-	// 		data: {
-	// 			distance_meter: total_meter_distance,
-	// 			distance_km: parseInt( ( total_meter_distance / 1000 ) ),
-	// 			duration: 0
-	// 		}
-	// 	} );
-	// };
 
  	/** 
  	  * Total Inspeksi : Per-Minggu
@@ -197,6 +143,18 @@
 	 
 	
  	exports.total_durasi_inspeksi = async ( req, res ) => {
+ 		// Model : SummaryWeeklyModel
+ 		// Sample
+ 		var sample_json = {
+			"DURASI": 122,
+			"JARAK": 4832,
+			"TOTAL_INSPEKSI": 40,
+			"TOTAL_BARIS": 94,
+			"SUMMARY_DATE": 20190812,
+			"INSERT_USER": "SYSTEM", // Hardcode
+			"INSERT_TIME": CURRENT_TIMESTAMP
+		}
+
 		var query = await InspectionHModel.aggregate([
 			{
 				"$match":{
@@ -229,10 +187,7 @@
 			},
 			{
 				"$match": {
-					"INSERT_USER": req.auth.USER_AUTH_CODE,
-					"TRACK_INSPECTION_CODE": {
-						$in: ["TTAC001070190401120158","TTAC001070190401120204"]
-					}
+					"INSERT_USER": req.auth.USER_AUTH_CODE
 				}
 			},
 			{
