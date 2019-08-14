@@ -192,5 +192,82 @@
  			status: true,
  			message: "Success!",
  			data: results
- 		} );
- 	}
+		 } );
+	 }
+	 
+	
+ 	exports.total_durasi_inspeksi = async ( req, res ) => {
+		var query = await InspectionHModel.aggregate([
+			{
+				"$match":{
+					INSERT_USER: req.auth.USER_AUTH_CODE
+				}
+			},
+			{
+				"$project":{
+					"_id": 0,
+					"START_INSPECTION": 1,
+					"END_INSPECTION": 1
+				}
+			}
+		]);
+		
+		var total_time = 0;
+		if( query.length > 0 ){
+			for( var i = 0; i < query.length; i++ ){
+				var inspection = query[i];
+				var hasil = Math.abs(inspection.END_INSPECTION - inspection.START_INSPECTION);
+				total_time += hasil;
+			}
+		}
+
+		var queryTrack = await InspectionTrackingModel.aggregate( [
+			{
+				"$sort": {
+					"INSERT_TIME": -1
+				}
+			},
+			{
+				"$match": {
+					"INSERT_USER": req.auth.USER_AUTH_CODE,
+					"TRACK_INSPECTION_CODE": {
+						$in: ["TTAC001070190401120158","TTAC001070190401120204"]
+					}
+				}
+			},
+			{
+				"$project": {
+					"_id": 0,
+					"TRACK_INSPECTION_CODE": 1,
+					"BLOCK_INSPECTION_CODE": 1,
+					"DATE_TRACK": 1,
+					"LAT_TRACK": 1,
+					"LONG_TRACK": 1
+				}
+			}
+		] );
+
+		var total_meter_distance = 0;
+
+		if ( queryTrack.length > 0 ) {
+			for ( var i = 0; i <= ( queryTrack.length - 1 ); i++ ) {
+				if ( i < ( queryTrack.length - 1 ) ) {
+					var j = i + 1;
+					var track_1 = queryTrack[i];
+					var track_2 = queryTrack[j];
+					var compute_distance = exports.compute_distance( track_1.LAT_TRACK, track_1.LONG_TRACK, track_2.LAT_TRACK, track_2.LONG_TRACK );
+					console.log(compute_distance);
+					total_meter_distance += compute_distance;
+				}
+			}
+		}
+
+		return res.status( 200 ).json( {
+			status: true,
+			message: "Success!",
+			data: {
+				total_durasi: total_time,
+				total_meter_jarak: total_meter_distance
+			}
+		} );
+	}

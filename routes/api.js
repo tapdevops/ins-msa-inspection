@@ -73,6 +73,7 @@
 
 			// Summary
 			app.post( '/api/v1.0/summary/total-inspeksi', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.SummaryController.total_inspeksi );
+			app.get( '/api/v1.0/summary/total-durasi', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.SummaryController.total_durasi_inspeksi );
 			// app.get( '/api/v1.0/summary/total-jarak', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.SummaryController.total_jarak );
 			
 			// Export
