@@ -145,16 +145,6 @@
 	
  	exports.total_durasi_inspeksi = async ( req, res ) => {
  		// Model : SummaryWeeklyModel
- 		// Sample
- 		// var sample_json = {
-		// 	"DURASI": 122,
-		// 	"JARAK": 4832,
-		// 	"TOTAL_INSPEKSI": 40,
-		// 	"TOTAL_BARIS": 94,
-		// 	"SUMMARY_DATE": 20190812,
-		// 	"INSERT_USER": "SYSTEM", // Hardcode
-		// 	"INSERT_TIME": CURRENT_TIMESTAMP
-		// }
 //		
 		var date_now = new Date();
 		date_now = parseInt( MomentTimezone( date_now ).tz( "Asia/Jakarta" ).format( "YYYYMMDD" ) );
@@ -247,30 +237,27 @@
 				}
 			}
 
-			var query_inspeksi_baris = await InspectionHModel.aggregate( [
-				{
-					$project: {
-						INSPECTION_DATE: {
-							$gte: 20190801000000,
-							$lte: 20190810235959,
-						},
-						USER_AUTH_CODE: authCode
-					}
+			var query_inspeksi_baris = await InspectionHModel.find({
+				INSPECTION_DATE: {
+					$gte: 20190801000000,
+					$lte: 20190810235959,
 				},
-				{
-					$count: "jumlah_baris"
-				}
-			] )
+				USER_AUTH_CODE: authCode
+			}).count();
+
+			console.log(query_inspeksi_baris);
+			
 			
 			var set = new SummaryWeeklyModel( {
 				"DURASI": total_time,
 				"JARAK": total_meter_distance,
 				"TOTAL_INSPEKSI": 40,
-				"TOTAL_BARIS": query_inspeksi_baris[0].jumlah_baris,
+				"TOTAL_BARIS": query_inspeksi_baris,
 				"SUMMARY_DATE": date_now,
 				"INSERT_USER": "SYSTEM", // Hardcode
 				"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 			} );
 			set.save();
+			
 		}
 	}
