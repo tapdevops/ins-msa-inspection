@@ -11,6 +11,7 @@
 	const InspectionHModel = require( _directory_base + '/app/v1.0/Http/Models/InspectionHModel.js' );
 	const InspectionTrackingModel = require( _directory_base + '/app/v1.0/Http/Models/InspectionTrackingModel.js' );
 	const SummaryWeeklyModel = require( _directory_base + '/app/v1.0/Http/Models/SummaryWeeklyModel.js' );
+	const Helper = require( _directory_base + '/app/v1.0/Http/Libraries/HelperLib.js' );
 
 	// Node Module
 	const MomentTimezone = require( 'moment-timezone' );
@@ -144,84 +145,117 @@
 	
  	exports.total_durasi_inspeksi = async ( req, res ) => {
 
- 		// Model : SummaryWeeklyModel
- 		// Sample
- 		var sample_json = {
-			"DURASI": 122,
-			"JARAK": 4832,
-			"TOTAL_INSPEKSI": 40,
-			"TOTAL_BARIS": 94,
-			"SUMMARY_DATE": 20190812,
-			"INSERT_USER": "SYSTEM", // Hardcode
-			"INSERT_TIME": CURRENT_TIMESTAMP
-		}
-
-		var query = await InspectionHModel.aggregate([
+		var date_now = new Date();
+			date_now = parseInt( MomentTimezone( date_now ).tz( "Asia/Jakarta" ).format( "YYYYMMDD" ) );
+		var date_min_1_week = new Date();
+			date_min_1_week.setDate( date_min_1_week.getDate() - 7 );
+			date_min_1_week = parseInt( MomentTimezone( date_min_1_week ).tz( "Asia/Jakarta" ).format( "YYYYMMDD" ) );
+		var query = await InspectionHModel.aggregate( [
 			{
-				"$match":{
-					INSERT_USER: req.auth.USER_AUTH_CODE
+				$match: {
+					INSERT_TIME: {
+						$gte: date_min_1_week,
+						$lte: date_now,
+					}
 				}
 			},
 			{
-				"$project":{
-					"_id": 0,
-					"START_INSPECTION": 1,
-					"END_INSPECTION": 1
-				}
-			}
-		]);
-		var total_time = 0;
-		if( query.length > 0 ){
-			for( var i = 0; i < query.length; i++ ){
-				var inspection = query[i];
-				var hasil = Math.abs(inspection.END_INSPECTION - inspection.START_INSPECTION);
-				total_time += hasil;
-			}
-		}
-
-		var queryTrack = await InspectionTrackingModel.aggregate( [
-			{
-				"$sort": {
-					"INSERT_TIME": -1
+				$group: {
+					_id: {
+						INSERT_USER: "$INSERT_USER"
+					}
 				}
 			},
 			{
-				"$match": {
-					"INSERT_USER": req.auth.USER_AUTH_CODE
-				}
-			},
-			{
-				"$project": {
-					"_id": 0,
-					"TRACK_INSPECTION_CODE": 1,
-					"BLOCK_INSPECTION_CODE": 1,
-					"DATE_TRACK": 1,
-					"LAT_TRACK": 1,
-					"LONG_TRACK": 1
+				$project: {
+					_id: 0,
+					USER_AUTH_CODE: "$_id.INSERT_USER"
 				}
 			}
-		] );
-		var total_meter_distance = 0;
+		] ); 
 
-		if ( queryTrack.length > 0 ) {
-			for ( var i = 0; i <= ( queryTrack.length - 1 ); i++ ) {
-				if ( i < ( queryTrack.length - 1 ) ) {
-					var j = i + 1;
-					var track_1 = queryTrack[i];
-					var track_2 = queryTrack[j];
-					var compute_distance = exports.compute_distance( track_1.LAT_TRACK, track_1.LONG_TRACK, track_2.LAT_TRACK, track_2.LONG_TRACK );
-					console.log(compute_distance);
-					total_meter_distance += compute_distance;
+		console.log(query);
+
+		for( i in query){
+			var authCode = query[i].USER_AUTH_CODE;
+			var queryTime = await InspectionHModel.aggregate( [
+				{
+					"$match": {
+						"INSERT_USER": authCode
+					}
+				},
+				{
+					"$project":{
+						"_id": 0,
+						"START_INSPECTION": 1,
+						"END_INSPECTION": 1
+					}
+				}
+			] );
+			var total_time = 0;
+			if( queryTime.length > 0 ){
+				for( var i = 0; i < queryTime.length; i++ ){
+					var inspection = queryTime[i];
+					var hasil = Math.abs( inspection.END_INSPECTION - inspection.START_INSPECTION );
+					total_time += hasil;
 				}
 			}
+			var queryTrack = await InspectionTrackingModel.aggregate( [
+				{
+					"$sort": {
+						"INSERT_TIME": -1
+					}
+				},
+				{
+					"$match": {
+						"INSERT_USER": authCode
+					}
+				},
+				{
+					"$project": {
+						"_id": 0,
+						"TRACK_INSPECTION_CODE": 1,
+						"BLOCK_INSPECTION_CODE": 1,
+						"DATE_TRACK": 1,
+						"LAT_TRACK": 1,
+						"LONG_TRACK": 1
+					}
+				}
+			] );
+
+			var total_meter_distance = 0;
+
+			if ( queryTrack.length > 0 ) {
+				for ( var i = 0; i <= ( queryTrack.length - 1 ); i++ ) {
+					if ( i < ( queryTrack.length - 1 ) ) {
+						var j = i + 1;
+						var track_1 = queryTrack[i];
+						var track_2 = queryTrack[j];
+						var compute_distance = exports.compute_distance( track_1.LAT_TRACK, track_1.LONG_TRACK, track_2.LAT_TRACK, track_2.LONG_TRACK );
+						
+						total_meter_distance += compute_distance;
+					}
+				}
+			}
+
+			var query_inspeksi_baris = await InspectionHModel.find({
+				INSPECTION_DATE: {
+					$gte: date_min_1_week,
+					$lte: date_now,
+				},
+				USER_AUTH_CODE: authCode
+			}).count();
+			
+			var set = new SummaryWeeklyModel( {
+				"DURASI": total_time,
+				"JARAK": total_meter_distance,
+				"TOTAL_INSPEKSI": 40,
+				"TOTAL_BARIS": query_inspeksi_baris,
+				"SUMMARY_DATE": date_now,
+				"INSERT_USER": "SYSTEM", // Hardcode
+				"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
+			} );
+			set.save();
+			
 		}
-
-		return res.status( 200 ).json( {
-			status: true,
-			message: "Success!",
-			data: {
-				total_durasi: total_time,
-				total_meter_jarak: total_meter_distance
-			}
-		} );
 	}
