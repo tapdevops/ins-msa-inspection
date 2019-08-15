@@ -143,6 +143,7 @@
 	 
 	
  	exports.total_durasi_inspeksi = async ( req, res ) => {
+
  		// Model : SummaryWeeklyModel
  		// Sample
  		var sample_json = {
@@ -169,7 +170,6 @@
 				}
 			}
 		]);
-		
 		var total_time = 0;
 		if( query.length > 0 ){
 			for( var i = 0; i < query.length; i++ ){
@@ -201,7 +201,6 @@
 				}
 			}
 		] );
-
 		var total_meter_distance = 0;
 
 		if ( queryTrack.length > 0 ) {
