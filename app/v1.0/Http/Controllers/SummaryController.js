@@ -30,9 +30,16 @@
 		var query_summary_weekly = await SummaryWeeklyModel.aggregate( [
 			{
 				"$match": {
-					"SUMMARY_DATE": 20190820,
-					"INSERT_USER": "TAC001035"
+					"INSERT_USER": req.auth.USER_AUTH_CODE // req.auth
 				}
+			},
+			{
+				$sort: {
+					SUMMARY_DATE: -1
+				}
+			},
+			{
+				$limit: 1
 			}
 		])
 		var summary = query_summary_weekly[0]
@@ -49,9 +56,23 @@
 			insert_user: summary.INSERT_USER,
 			insert_time: summary.INSERT_TIME
 		}
-
+		console.log( req.body.IS_VIEW )
+		if( req.body.IS_VIEW == 1 ){
+			SummaryWeeklyModel.findOneAndUpdate( {
+				INSERT_USER: req.auth.USER_AUTH_CODE,
+				IS_VIEW : 0	
+			},
+			{
+				IS_VIEW: 1
+			},
+			{
+				new: true
+			} ).then( data => {
+				console.log( data )
+			} )
+		}
 		return res.json( {
-			"status": true,
+			"status": ( req.body.IS_VIEW == 0 ? true : false ),
 			"message": "OK",
 			"data": result
 		} );
@@ -233,6 +254,7 @@
 					"TOTAL_INSPEKSI": query_total_inspeksi[0].jumlah_inspeksi, 
 					"TOTAL_BARIS": query_inspeksi_baris,
 					"SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
+					"IS_VIEW": 0,
 					"INSERT_USER": authCode, // Hardcode
 					"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 				} );
@@ -242,4 +264,8 @@
 		}else{
 			console.log( "query.length kurang dari 0" )
 		}
+
+		return res.json( {
+			message: "OK"
+		} );
 	}

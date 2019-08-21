@@ -72,7 +72,7 @@
 			app.get( '/api/v1.0/report', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.InspectionReportController.find );
 
 			// Summary
-			app.get( '/api/v1.0/summary', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.SummaryController.inspeksi );
+			app.post( '/api/v1.0/summary', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.SummaryController.inspeksi );
 			app.get( '/api/v1.0/summary/generate', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.SummaryController.process_weekly );
 			
 			// Export
