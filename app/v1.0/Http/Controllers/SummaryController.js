@@ -56,26 +56,35 @@
 			insert_user: summary.INSERT_USER,
 			insert_time: summary.INSERT_TIME
 		}
-		console.log( req.body.IS_VIEW )
-		if( req.body.IS_VIEW == 1 ){
-			SummaryWeeklyModel.findOneAndUpdate( {
-				INSERT_USER: req.auth.USER_AUTH_CODE,
-				IS_VIEW : 0	
-			},
-			{
-				IS_VIEW: 1
-			},
-			{
-				new: true
-			} ).then( data => {
-				console.log( data )
-			} )
+
+		if( req.body.IS_VIEW ){
+			if ( req.body.IS_VIEW == 1 ) {
+				SummaryWeeklyModel.findOneAndUpdate( 
+					{
+						INSERT_USER: req.auth.USER_AUTH_CODE,
+						IS_VIEW : 0	
+					}, 
+					{
+						IS_VIEW: 1
+					}, 
+					{ new: true } 
+				).then( data => {
+					return res.json( {
+						"status": ( summary.IS_VIEW == 0 ? true : false ),
+						"message": "OK",
+						"data": result
+					} );
+				} );
+			}
 		}
-		return res.json( {
-			"status": ( req.body.IS_VIEW == 0 ? true : false ),
-			"message": "OK",
-			"data": result
-		} );
+		else {
+			return res.json( {
+				"status": false,
+				"message": "Error! Variabel IS_VIEW kosong",
+				"data": []
+			} );
+		}
+		
 	}
 
  	/** 
@@ -248,18 +257,30 @@
 					}
 				])
 
-				var set = new SummaryWeeklyModel( {
-					"DURASI": total_time,
-					"JARAK": total_meter_distance,
-					"TOTAL_INSPEKSI": query_total_inspeksi[0].jumlah_inspeksi, 
-					"TOTAL_BARIS": query_inspeksi_baris,
-					"SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
-					"IS_VIEW": 0,
-					"INSERT_USER": authCode, // Hardcode
-					"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
+				SummaryWeeklyModel.findOne( {
+					INSERT_USER: authCode,
+					SUMMARY_DATE: parseInt( date_now.toString().substr( 0, 8 ) )
+				} ).then( data => {
+					if ( !data ) {
+						var set = new SummaryWeeklyModel( {
+							"DURASI": total_time,
+							"JARAK": total_meter_distance,
+							"TOTAL_INSPEKSI": query_total_inspeksi[0].jumlah_inspeksi, 
+							"TOTAL_BARIS": query_inspeksi_baris,
+							"SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
+							"IS_VIEW": 0,
+							"INSERT_USER": authCode, // Hardcode
+							"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
+						} );
+						console.log( "Log Weekly Summary Disimpan" );
+						console.log(set)
+						set.save();
+					}
+					else {
+						console.log( "Log Weekly Summary Tidak Disimpan" );
+					}
 				} );
-				console.log(set)
-				set.save();
+				
 			}
 		}else{
 			console.log( "query.length kurang dari 0" )
