@@ -22,11 +22,13 @@
 	  * --------------------------------------------------------------------
 	*/
  	exports.find = async ( req, res ) => {
+
+ 		console.log("XXX");
+
  		var url_query = req.query;
 		var url_query_length = Object.keys( url_query ).length;
 		var query = {};
 			query.DELETE_USER = "";
-
 
 		console.log( query );
 		
@@ -41,6 +43,15 @@
 				},
 				DELETE_USER: ""
 			} );
+
+			console.log({
+				WERKS: new RegExp( '^' + req.query.REGION_CODE.substr( 1, 2 ) ),
+				INSPECTION_DATE: {
+					$gte: parseInt( req.query.START_DATE ),
+					$lte: parseInt( req.query.END_DATE )
+				},
+				DELETE_USER: ""
+			});
 			
 			res.send( {
 				status: true,

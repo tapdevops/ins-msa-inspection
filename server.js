@@ -17,6 +17,7 @@
 	const body_parser = require( 'body-parser' );
 	const express = require( 'express' );
 	const mongoose = require( 'mongoose' );
+	const timeout = require( 'connect-timeout' );
 
 	// Primary Variable
 	const app = express();
@@ -31,6 +32,23 @@
 
 	// Parse request of content-type - application/json
 	app.use( body_parser.json() );
+
+	// Timeout Handling
+	app.use( timeout( 3600000 ) );
+	app.use( halt_on_timeout );
+
+	function halt_on_timeout( req, res, next ){
+		if ( !req.timedout ) {
+			 next();
+		}
+		else {
+			return res.json( {
+				status: false,
+				message: "Connection Timeout",
+				data: {}
+			} )
+		}
+	}
 
 	// Setup Database
 	mongoose.Promise = global.Promise;
@@ -48,12 +66,13 @@
 	} );
 
 	// Server Running Message
-	app.listen( parseInt( config.app.port[config.app.env] ), () => {
+	var server = app.listen( parseInt( config.app.port[config.app.env] ), () => {
 		console.log( "Server :" );
 		console.log( "\tStatus \t\t: OK" );
 		console.log( "\tService \t: " + config.app.name + " (" + config.app.env + ")" );
 		console.log( "\tPort \t\t: " + config.app.port[config.app.env] );
 	} );
+	server.timeout = 100000;
 
 	// Routing
 	require( './routes/api.js' )( app );
