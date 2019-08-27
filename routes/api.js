@@ -39,7 +39,7 @@
 		 |--------------------------------------------------------------------------
 		 */
 			app.get( '/', ( req, res ) => {
-				res.json( { 
+				return res.json( { 
 					application: {
 						name : config.app.name,
 						env : config.app.env,
@@ -61,9 +61,9 @@
 		 	app.post( '/api/v1.0/genba',  Middleware.v_1_0.VerifyToken, Controllers.v_1_0.InspectionGenbaController.create );
 			
 			// Inspection Header
-			app.get( '/api/v1.0/find',  Middleware.v_1_0.VerifyToken, Controllers.v_1_0.InspectionHeaderController.find );
-		 	app.post( '/api/v1.0/header',  Middleware.v_1_0.VerifyToken, Controllers.v_1_0.InspectionHeaderController.create );
-			app.get( '/api/v1.0/header/:id',  Middleware.v_1_0.VerifyToken, Controllers.v_1_0.InspectionHeaderController.find_one );
+			app.get( '/api/v1.0/find', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.InspectionHeaderController.find );
+		 	app.post( '/api/v1.0/header', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.InspectionHeaderController.create );
+			app.get( '/api/v1.0/header/:id', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.InspectionHeaderController.find_one );
 			
 			// Inspection Tracking
 			app.post( '/api/v1.0/tracking', Middleware.v_1_0.VerifyToken, Controllers.v_1_0.InspectionTrackingController.create );

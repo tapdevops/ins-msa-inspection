@@ -41,39 +41,61 @@
 			{
 				$limit: 1
 			}
-		])
-		var summary = query_summary_weekly[0]
-		var jam = parseInt( summary.DURASI / 3600 );
-		var menit = parseInt( summary.DURASI % 3600 / 60 );
-		
+		] );
 		var result = {
-			jarak_meter: summary.JARAK,
-			durasi_menit: menit ,
-			durasi_jam: jam >= 1 ? jam : 0,
-			total_inspeksi: summary.TOTAL_INSPEKSI,
-			total_baris: summary.TOTAL_BARIS,
-			summary_date: summary.SUMMARY_DATE,
-			insert_user: summary.INSERT_USER,
-			insert_time: summary.INSERT_TIME
+			jarak_meter: 0,
+			durasi_menit: 0 ,
+			durasi_jam: 0,
+			total_inspeksi: 0,
+			total_baris: 0,
+			summary_date: 0,
+			insert_user: "",
+			insert_time: 0
 		}
 
+		console.log(query_summary_weekly);
+
 		if( req.body.IS_VIEW ){
-			if ( req.body.IS_VIEW == 1 ) {
-				SummaryWeeklyModel.findOneAndUpdate( 
-					{
-						INSERT_USER: req.auth.USER_AUTH_CODE,
-						IS_VIEW : 0	
-					}, 
-					{
-						IS_VIEW: 1
-					}, 
-					{ new: true } 
-				).then( data => {
-					return res.json( {
-						"status": ( summary.IS_VIEW == 0 ? true : false ),
-						"message": "OK",
-						"data": result
+			if ( query_summary_weekly.length > 0 ) {
+				var summary = query_summary_weekly[0]
+				var jam = parseInt( summary.DURASI / 3600 );
+				var menit = parseInt( summary.DURASI % 3600 / 60 );
+				var result = {
+					jarak_meter: summary.JARAK,
+					durasi_menit: menit ,
+					durasi_jam: jam >= 1 ? jam : 0,
+					total_inspeksi: summary.TOTAL_INSPEKSI,
+					total_baris: summary.TOTAL_BARIS,
+					summary_date: summary.SUMMARY_DATE,
+					insert_user: summary.INSERT_USER,
+					insert_time: summary.INSERT_TIME
+				}
+				if ( req.body.IS_VIEW == 1 ) {
+					SummaryWeeklyModel.findOneAndUpdate( 
+						{
+							INSERT_USER: req.auth.USER_AUTH_CODE,
+							IS_VIEW : 0	
+						}, 
+						{
+							IS_VIEW: 1
+						}, 
+						{ new: true } 
+					).then( data => {
+						console.log(data);
 					} );
+				}
+
+				return res.json( {
+					"status": ( summary.IS_VIEW == 0 ? true : false ),
+					"message": "OK",
+					"data": result
+				} );
+			}
+			else {
+				return res.json( {
+					"status": true,
+					"message": "Tidak ada data di periode sebelumnya",
+					"data": result
 				} );
 			}
 		}
@@ -141,6 +163,8 @@
 				}
 			}
 		] ); 
+
+		// console.log(date_min_1_week + ' / ' + date_now);
 		
 		if( query.length > 0 ){
 			for ( i in query ) {
@@ -273,7 +297,7 @@
 							"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 						} );
 						console.log( "Log Weekly Summary Disimpan" );
-						console.log(set)
+						// console.log(set)
 						set.save();
 					}
 					else {
