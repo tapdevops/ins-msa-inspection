@@ -161,8 +161,8 @@
 				] );
 				var total_time = 0;
 				if( queryTime.length > 0 ){
-					for( var i = 0; i < queryTime.length; i++ ){
-						var inspection = queryTime[i];
+					for( var j = 0; j < queryTime.length; j++ ){
+						var inspection = queryTime[j];
 						var hasil = Math.abs( inspection.END_INSPECTION - inspection.START_INSPECTION );
 						total_time += hasil;
 					}
@@ -193,24 +193,18 @@
 				var total_meter_distance = 0;
 	
 				if ( queryTrack.length > 0 ) {
-					for ( var i = 0; i <= ( queryTrack.length - 1 ); i++ ) {
-						if ( i < ( queryTrack.length - 1 ) ) {
-							var j = i + 1;
-							var track_1 = queryTrack[i];
-							var track_2 = queryTrack[j];
+
+					for ( var k = 0; k <= ( queryTrack.length - 1 ); k++ ) {
+						if ( k < ( queryTrack.length - 1 ) ) {
+							var l = k + 1;
+							var track_1 = queryTrack[k];
+							var track_2 = queryTrack[l];
 							var compute_distance = exports.compute_distance( track_1.LAT_TRACK, track_1.LONG_TRACK, track_2.LAT_TRACK, track_2.LONG_TRACK );
 							
 							total_meter_distance += compute_distance;
 						}
 					}
 				}
-				var query_inspeksi_baris = await InspectionHModel.find( {
-					INSPECTION_DATE: {
-						$gte: date_min_1_week,
-						$lte: date_now,
-					},
-					INSERT_USER: authCode
-				} ).count();
 				
 				var query_total_inspeksi = await InspectionHModel.aggregate( [
 					{	
@@ -223,7 +217,11 @@
 								"INSPECTION_DATE": {
 									"$toInt": {
 										"$substr": [
-											{ "$toLong": "$INSPECTION_DATE" }, 0, 8
+											{
+												"$toLong": "$INSPECTION_DATE"
+											},
+											0,
+											8
 										]
 									}
 								}
@@ -247,40 +245,32 @@
 					{
 						$match: {
 							"INSPECTION_DATE": {
-								"$gte": parseInt( date_min_1_week.toString().substr( 0, 8 ) ), // First Date
-								"$lte": parseInt( date_now.toString().substr( 0, 8 ) ) // Last Date
-							}
+								"$gte": parseInt( date_min_1_week.toString().substr( 0, 8 ) ),
+								"$lte": parseInt( date_now.toString().substr( 0, 8 ) )
+							},
+							"INSERT_USER": authCode
 						}
-					},
-					{
-						$count: "jumlah_inspeksi"
 					}
 				]);
+				
+				var total_baris = 0;
+				if( query_total_inspeksi.length > 0 ){
+					for( index in query_total_inspeksi ){
+						total_baris += query_total_inspeksi[index].COUNT;
+					}
+				}
 
-				SummaryWeeklyModel.findOne( {
-					INSERT_USER: authCode,
-					SUMMARY_DATE: parseInt( date_now.toString().substr( 0, 8 ) )
-				} ).then( data => {
-					if ( !data ) {
-						var set = new SummaryWeeklyModel( {
-							"DURASI": total_time,
-							"JARAK": total_meter_distance,
-							"TOTAL_INSPEKSI": query_total_inspeksi[0].jumlah_inspeksi, 
-							"TOTAL_BARIS": query_inspeksi_baris,
-							"SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
-							"IS_VIEW": 0,
-							"INSERT_USER": authCode, // Hardcode
-							"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
-						} );
-						console.log( "Log Weekly Summary Disimpan" );
-						console.log(set)
-						set.save();
-					}
-					else {
-						console.log( "Log Weekly Summary Tidak Disimpan" );
-					}
+				var set = new SummaryWeeklyModel( {
+					"DURASI": total_time,
+					"JARAK": total_meter_distance,
+					"TOTAL_INSPEKSI": query_total_inspeksi.length, 
+					"TOTAL_BARIS": total_baris,
+					"SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
+					"IS_VIEW": 0,
+					"INSERT_USER": query[i].USER_AUTH_CODE, // Hardcode
+					"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 				} );
-				set.save();				
+				set.save();
 			}
 		}else{
 			//Ketika USER_AUTH_CODE tidak didapatkan
