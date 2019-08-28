@@ -55,7 +55,7 @@
 
 		console.log(query_summary_weekly);
 
-		if( req.body.IS_VIEW ){
+		if( req.body.IS_VIEW ) {
 			if ( query_summary_weekly.length > 0 ) {
 				var summary = query_summary_weekly[0]
 				var jam = parseInt( summary.DURASI / 3600 );
