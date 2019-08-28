@@ -26,11 +26,10 @@
 	  * --------------------------------------------------------------------
 	*/
 	exports.inspeksi = async ( req, res ) => {
-
 		var query_summary_weekly = await SummaryWeeklyModel.aggregate( [
 			{
 				"$match": {
-					"INSERT_USER": req.auth.USER_AUTH_CODE // req.auth
+					"INSERT_USER": req.auth.USER_AUTH_CODE 
 				}
 			},
 			{
@@ -41,7 +40,8 @@
 			{
 				$limit: 1
 			}
-		])
+		]);
+		console.log( query_summary_weekly );
 		var summary = query_summary_weekly[0]
 		var jam = parseInt( summary.DURASI / 3600 );
 		var menit = parseInt( summary.DURASI % 3600 / 60 );
@@ -246,7 +246,7 @@
 					{
 						$count: "jumlah_inspeksi"
 					}
-				])
+				]);
 
 				var set = new SummaryWeeklyModel( {
 					"DURASI": total_time,
@@ -258,11 +258,11 @@
 					"INSERT_USER": authCode, // Hardcode
 					"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 				} );
-				console.log(set)
 				set.save();
 			}
 		}else{
-			console.log( "query.length kurang dari 0" )
+			//Ketika USER_AUTH_CODE tidak didapatkan
+			console.log( "USER_AUTH_CODE null" )
 		}
 
 		return res.json( {

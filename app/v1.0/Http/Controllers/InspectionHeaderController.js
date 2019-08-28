@@ -64,7 +64,7 @@
 			if ( check_inspeksi > 0 ) {
 				return res.send( {
 					status: false,
-					message: 'Block Inspection Code ' + req.body.BLOCK_INSPECTION_CODE + ' tidak tersedia.',
+					message: 'Block Inspection Code ' + req.body.BLOCK_INSPECTION_CODE + ' sudah digunakan.',
 					data: {}
 				} );
 			}
