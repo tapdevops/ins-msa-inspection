@@ -41,22 +41,16 @@
 				$limit: 1
 			}
 		]);
-		console.log( query_summary_weekly );
-		var summary = query_summary_weekly[0]
-		var jam = parseInt( summary.DURASI / 3600 );
-		var menit = parseInt( summary.DURASI % 3600 / 60 );
-		
 		var result = {
-			jarak_meter: summary.JARAK,
-			durasi_menit: menit ,
-			durasi_jam: jam >= 1 ? jam : 0,
-			total_inspeksi: summary.TOTAL_INSPEKSI,
-			total_baris: summary.TOTAL_BARIS,
-			summary_date: summary.SUMMARY_DATE,
-			insert_user: summary.INSERT_USER,
-			insert_time: summary.INSERT_TIME
+			jarak_meter: 0,
+			durasi_menit: 0 ,
+			durasi_jam: 0,
+			total_inspeksi: 0,
+			total_baris: 0,
+			summary_date: 0,
+			insert_user: "",
+			insert_time: 0
 		}
-
 		if( req.body.IS_VIEW ){
 			if ( req.body.IS_VIEW == 1 ) {
 				SummaryWeeklyModel.findOneAndUpdate( 
@@ -69,13 +63,46 @@
 					}, 
 					{ new: true } 
 				).then( data => {
-					return res.json( {
-						"status": ( summary.IS_VIEW == 0 ? true : false ),
-						"message": "OK",
-						"data": result
-					} );
+					console.log( data );
 				} );
 			}
+
+			if ( query_summary_weekly.length > 0 ) {
+				var summary = query_summary_weekly[0]
+				var jam = parseInt( summary.DURASI / 3600 );
+				var menit = parseInt( summary.DURASI % 3600 / 60 );
+				
+				result = {
+					jarak_meter: summary.JARAK,
+					durasi_menit: menit ,
+					durasi_jam: jam >= 1 ? jam : 0,
+					total_inspeksi: summary.TOTAL_INSPEKSI,
+					total_baris: summary.TOTAL_BARIS,
+					summary_date: summary.SUMMARY_DATE,
+					insert_user: summary.INSERT_USER,
+					insert_time: summary.INSERT_TIME
+				}
+			}
+			else {
+				var now = Helper.date_format( 'now', 'YYYYMMDDhhmmss' );
+				var set = new SummaryWeeklyModel( {
+					"DURASI": 0,
+					"JARAK": 0,
+					"TOTAL_INSPEKSI": 0, 
+					"TOTAL_BARIS": 0, 
+					"SUMMARY_DATE": parseInt( now.toString().substr( 0, 8 ) ),
+					"IS_VIEW": 0, 
+					"INSERT_USER": req.auth.USER_AUTH_CODE, // Hardcode
+					"INSERT_TIME": now
+				} );
+				set.save();
+			}
+
+			return res.json( {
+				"status": ( query_summary_weekly.length > 0 ? ( query_summary_weekly[0].IS_VIEW == 1 ? false : true ) : true ),
+				"message": "OK",
+				"data": result
+			} );
 		}
 		else {
 			return res.json( {
@@ -271,13 +298,21 @@
 					"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 				} );
 				set.save();
+
+				var check = await SummaryWeeklyModel.findOne( {
+					INSERT_USER: query[i].USER_AUTH_CODE,
+					SUMMARY_DATE: parseInt( date_now.toString().substr( 0, 8 ) )
+				} );
+				console.log(check);
+
 			}
-		}else{
-			//Ketika USER_AUTH_CODE tidak didapatkan
+		} else {
 			console.log( "USER_AUTH_CODE null" )
 		}
 
 		return res.json( {
-			message: "OK"
+			status: true,
+			message: "OK",
+			data: []
 		} );
 	}
