@@ -8,6 +8,15 @@
 
 	// Controllers
 	const Controllers = {
+		v_1_1: {
+			ExportController: require( _directory_base + '/app/v1.1/Http/Controllers/ExportController.js' ),
+			InspectionDetailController: require( _directory_base + '/app/v1.1/Http/Controllers/InspectionDetailController.js' ),
+			InspectionGenbaController: require( _directory_base + '/app/v1.1/Http/Controllers/InspectionGenbaController.js' ),
+			InspectionHeaderController: require( _directory_base + '/app/v1.1/Http/Controllers/InspectionHeaderController.js' ),
+			InspectionTrackingController: require( _directory_base + '/app/v1.1/Http/Controllers/InspectionTrackingController.js' ),
+			InspectionReportController: require( _directory_base + '/app/v1.1/Http/Controllers/InspectionReportController.js' ),
+			SummaryController: require( _directory_base + '/app/v1.1/Http/Controllers/SummaryController.js' ),
+		},
 		v_1_0: {
 			ExportController: require( _directory_base + '/app/v1.0/Http/Controllers/ExportController.js' ),
 			InspectionDetailController: require( _directory_base + '/app/v1.0/Http/Controllers/InspectionDetailController.js' ),
@@ -23,6 +32,9 @@
 	const Middleware = {
 		v_1_0: {
 			VerifyToken: require( _directory_base + '/app/v1.0/Http/Middleware/VerifyToken.js' )
+		},
+		v_1_1: {
+			VerifyToken: require( _directory_base + '/app/v1.1/Http/Middleware/VerifyToken.js' )
 		}
 	}
 	
@@ -47,6 +59,39 @@
 					} 
 				} )
 			} );
+
+		/*
+		 |--------------------------------------------------------------------------
+		 | Versi 1.1
+		 |--------------------------------------------------------------------------
+		 */
+		 	// Inspection Detail
+			 app.get( '/api/v1.1/detail/:id', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionDetailController.find_one );
+			 app.post( '/api/v1.1/detail', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionDetailController.create );
+			 
+			 // Inspection Header
+			  app.post( '/api/v1.1/genba',  Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionGenbaController.create );
+			 
+			 // Inspection Header
+			 app.get( '/api/v1.1/find', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionHeaderController.find );
+			  app.post( '/api/v1.1/header', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionHeaderController.create );
+			 app.get( '/api/v1.1/header/:id', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionHeaderController.find_one );
+			 
+			 // Inspection Tracking
+			 app.post( '/api/v1.1/tracking', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionTrackingController.create );
+			 
+			 // Inspection Report
+			 app.get( '/api/v1.1/report', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionReportController.find );
+ 
+			 // Summary
+			 app.post( '/api/v1.1/summary', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.SummaryController.inspeksi );
+			 app.get( '/api/v1.1/summary/generate', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.SummaryController.process_weekly );
+			 
+			 // Export
+			 app.get( '/api/v1.1/export/premi/:first_date/:end_date', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportController.premi );
+			 app.get( '/api/v1.1/export/tap-dw/tr-inspection/:first_date/:end_date', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportController.tap_dw_tr_inspection );
+			 
+		 /*
 
 		/*
 		 |--------------------------------------------------------------------------
