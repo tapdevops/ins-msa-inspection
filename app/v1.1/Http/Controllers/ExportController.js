@@ -7,11 +7,11 @@
  |
  */
  	// Models
- 	const InspectionHModel = require( _directory_base + '/app/v1.0/Http/Models/InspectionHModel.js' );
- 	const InspectionDModel = require( _directory_base + '/app/v1.0/Http/Models/InspectionDModel.js' );
+ 	const InspectionHModel = require( _directory_base + '/app/v1.1/Http/Models/InspectionHModel.js' );
+ 	const InspectionDModel = require( _directory_base + '/app/v1.1/Http/Models/InspectionDModel.js' );
 
 	// Libraries
- 	const HelperLib = require( _directory_base + '/app/v1.0/Http/Libraries/HelperLib.js' );
+ 	const HelperLib = require( _directory_base + '/app/v1.1/Http/Libraries/HelperLib.js' );
 
 
 /*
