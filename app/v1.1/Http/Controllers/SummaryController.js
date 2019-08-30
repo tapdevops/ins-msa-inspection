@@ -72,8 +72,6 @@
 			}
 		}
 
-		console.log("Hehehehe");
-
 		if( req.body.IS_VIEW ){
 			if ( req.body.IS_VIEW == 1 ) {
 				SummaryWeeklyModel.findOneAndUpdate( 
@@ -130,7 +128,6 @@
 	*/
  	exports.process_weekly = async ( req, res ) => {
 
- 		// var url = 'http://localhost/tap/tap-ldap/public/dw/time-daily/get-active-date-min-7/4123';
  		var url = {
  			user_data: config.app.url[config.app.env].microservice_auth + '/api/v1.1/user/data',
  			time_daily: config.app.url[config.app.env].ldap_2 + '/dw/time-daily/get-active-date-min-7'
@@ -146,7 +143,6 @@
 		var date_min_1_week = new Date();
 			date_min_1_week.setDate( date_min_1_week.getDate() - 7 );
 			date_min_1_week = parseInt( MomentTimezone( date_min_1_week ).tz( "Asia/Jakarta" ).format( "YYYYMMDD" ) + '000000' );
-
 
 		( new NodeRestClient() ).get( url.user_data, args, async function ( data, response ) {
 			if ( data.status == true ) {
@@ -197,7 +193,6 @@
 							}
 						}
 					] );
-		
 					var total_meter_distance = 0;
 		
 					if ( queryTrack.length > 0 ) {
@@ -262,8 +257,8 @@
 					]);
 					
 					var total_baris = 0;
-					if( query_total_inspeksi.length > 0 ){
-						for( index in query_total_inspeksi ){
+					if ( query_total_inspeksi.length > 0 ) {
+						for ( index in query_total_inspeksi ) {
 							total_baris += query_total_inspeksi[index].COUNT;
 						}
 					}
