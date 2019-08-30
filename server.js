@@ -6,7 +6,7 @@
 	global._directory_base = __dirname;
 	global.config = {};
 		  config.app = require( './config/app.js' );
-		  config.database = require( './config/database.js' )[config.app.env];
+		  config.database = require( './config/database.js' )['inspection'][config.app.env];
 
 /*
 |--------------------------------------------------------------------------
@@ -14,13 +14,13 @@
 |--------------------------------------------------------------------------
 */
 	// Node Modules
-	const body_parser = require( 'body-parser' );
-	const express = require( 'express' );
-	const mongoose = require( 'mongoose' );
+	const BodyParser = require( 'body-parser' );
+	const Express = require( 'express' );
+	const Mongoose = require( 'mongoose' );
 	const timeout = require( 'connect-timeout' );
 
 	// Primary Variable
-	const app = express();
+	const App = Express();
 
 /*
 |--------------------------------------------------------------------------
@@ -28,14 +28,14 @@
 |--------------------------------------------------------------------------
 */
 	// Parse request of content-type - application/x-www-form-urlencoded
-	app.use( body_parser.urlencoded( { extended: false } ) );
+	App.use( BodyParser.urlencoded( { extended: false } ) );
 
 	// Parse request of content-type - application/json
-	app.use( body_parser.json() );
+	App.use( BodyParser.json() );
 
 	// Timeout Handling
-	app.use( timeout( 3600000 ) );
-	app.use( halt_on_timeout );
+	App.use( timeout( 3600000 ) );
+	App.use( halt_on_timeout );
 
 	function halt_on_timeout( req, res, next ){
 		if ( !req.timedout ) {
@@ -51,29 +51,22 @@
 	}
 
 	// Setup Database
-	mongoose.Promise = global.Promise;
-	mongoose.connect( config.database.url, {
+	Mongoose.Promise = global.Promise;
+	Mongoose.connect( config.database.url, {
 		useNewUrlParser: true,
 		ssl: config.database.ssl
 	} ).then( () => {
-		console.log( "Database :" );
-		console.log( "\tStatus \t\t: Connected" );
-		console.log( "\tMongoDB URL \t: " + config.database.url + " (" + config.app.env + ")" );
+		console.log( "Database connected (" + config.app.env + ")" );
 	} ).catch( err => {
-		console.log( "Database :" );
-		console.log( "\tDatabase Status : Not Connected" );
-		console.log( "\tMongoDB URL \t: " + config.database.url + " (" + config.app.env + ")" );
+		console.log( "Database not connected (" + config.app.env + ")" );
 	} );
 
 	// Server Running Message
-	var server = app.listen( parseInt( config.app.port[config.app.env] ), () => {
-		console.log( "Server :" );
-		console.log( "\tStatus \t\t: OK" );
-		console.log( "\tService \t: " + config.app.name + " (" + config.app.env + ")" );
-		console.log( "\tPort \t\t: " + config.app.port[config.app.env] );
+	var Server = App.listen( parseInt( config.app.port[config.app.env] ), () => {
+		Server.timeout = 120 * 60 * 1000;
+		console.log( "Server connected (" + config.app.env + ")" );
 	} );
-	server.timeout = 100000;
 
 	// Routing
-	require( './routes/api.js' )( app );
-	module.exports = app;
+	require( './routes/api.js' )( App );
+	module.exports = App;
