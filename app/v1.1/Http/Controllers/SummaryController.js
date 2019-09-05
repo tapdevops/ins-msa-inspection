@@ -131,7 +131,7 @@
  		var url = {
  			user_data: config.app.url[config.app.env].microservice_auth + '/api/v1.1/user/data',
  			time_daily: config.app.url[config.app.env].ldap_2 + '/dw/time-daily/get-active-date-min-7'
- 		}
+ 		};
 		var args = {
 			headers: { 
 				"Content-Type": "application/json",
@@ -273,7 +273,7 @@
 									"Content-Type": "application/json" 
 								}
 							};
-
+							
 							( new NodeRestClient() ).get( url_ldap, args_ldap, function ( time_data, time_response ) {
 								var target_inspeksi = parseInt( time_data.data.results.jumlah_hari ) * 2;
 								var set = new SummaryWeeklyModel( {
@@ -321,7 +321,6 @@
 							set.save();
 						}
 					}
-					
 				} );
 			}
 
