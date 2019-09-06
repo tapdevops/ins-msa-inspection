@@ -161,6 +161,11 @@
 								"START_INSPECTION": 1,
 								"END_INSPECTION": 1
 							}
+						},
+						{
+							"$sort": {
+								"START_INSPECTION": -1
+							}
 						}
 					] );
 					var total_time = 0;
@@ -168,9 +173,16 @@
 						for( var j = 0; j < queryTime.length; j++ ){
 							var inspection = queryTime[j];
 							var hasil = Math.abs( inspection.END_INSPECTION - inspection.START_INSPECTION );
+							// console.log( "INSPECTION: ", inspection );
+							
 							total_time += hasil;
 						}
 					}
+
+					if ( authCode == '0102' ) {
+						console.log( total_time )
+					}
+					
 					var queryTrack = await InspectionTrackingModel.aggregate( [
 						{
 							"$sort": {
@@ -203,11 +215,14 @@
 								var track_1 = queryTrack[k];
 								var track_2 = queryTrack[l];
 								var compute_distance = exports.compute_distance( track_1.LAT_TRACK, track_1.LONG_TRACK, track_2.LAT_TRACK, track_2.LONG_TRACK );
-								
 								total_meter_distance += compute_distance;
 							}
 						}
 					}
+					// if( total_meter_distance != 0 ){
+					// 	console.log( total_meter_distance )
+					// }
+					
 					
 					var query_total_inspeksi = await InspectionHModel.aggregate( [
 						{	
@@ -318,6 +333,10 @@
 								"INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
 								"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 							} );
+							// if( total_meter_distance != 0 ){
+							// 	console.log( "METER", total_meter_distance );
+							// 	console.log( "BARIS", total_baris );
+							// }
 							set.save();
 						}
 					}

@@ -297,7 +297,8 @@
 					"INSERT_USER": query[i].USER_AUTH_CODE, // Hardcode
 					"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 				} );
-				set.save();
+				console.log( set );
+				// set.save();
 
 				var check = await SummaryWeeklyModel.findOne( {
 					INSERT_USER: query[i].USER_AUTH_CODE,
