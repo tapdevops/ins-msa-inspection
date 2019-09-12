@@ -169,20 +169,14 @@
 						}
 					] );
 					var total_time = 0;
+					
 					if( queryTime.length > 0 ){
 						for( var j = 0; j < queryTime.length; j++ ){
 							var inspection = queryTime[j];
 							var hasil = Math.abs( inspection.END_INSPECTION - inspection.START_INSPECTION );
-							// console.log( "INSPECTION: ", inspection );
-							
 							total_time += hasil;
 						}
 					}
-
-					if ( authCode == '0102' ) {
-						console.log( total_time )
-					}
-					
 					var queryTrack = await InspectionTrackingModel.aggregate( [
 						{
 							"$sort": {
@@ -219,10 +213,8 @@
 							}
 						}
 					}
-					// if( total_meter_distance != 0 ){
-					// 	console.log( total_meter_distance )
-					// }
-					
+					console.log( "AUTHCODE: ", authCode );
+					console.log( "TOTAL METER: ", total_meter_distance );
 					
 					var query_total_inspeksi = await InspectionHModel.aggregate( [
 						{	
@@ -302,8 +294,10 @@
 									"INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
 									"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 								} );
-								set.save();
+								console.log( "ASISTEN LAPANGAN: ", set );
+								// set.save();
 							} );
+							// console.log( "ASISTEN_LAPANGAN:", dt.USER_ROLE  );
 						}
 						else if ( dt.USER_ROLE == 'KEPALA_KEBUN' ) {
 							var target_inspeksi = parseInt( 2 * location_code.length );
@@ -318,7 +312,8 @@
 								"INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
 								"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 							} );
-							set.save();
+							console.log( "KEPALA_KEBUN:", set  );
+							// set.save();
 						}
 						
 						else {
@@ -333,11 +328,8 @@
 								"INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
 								"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 							} );
-							// if( total_meter_distance != 0 ){
-							// 	console.log( "METER", total_meter_distance );
-							// 	console.log( "BARIS", total_baris );
-							// }
-							set.save();
+							console.log( "SET ELSE: ", set );
+							// set.save();
 						}
 					}
 				} );
