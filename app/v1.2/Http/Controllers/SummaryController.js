@@ -7,11 +7,11 @@
  |
  */
  	// Models
-	const InspectionDModel = require( _directory_base + '/app/v1.1/Http/Models/InspectionDModel.js' );
-	const InspectionHModel = require( _directory_base + '/app/v1.1/Http/Models/InspectionHModel.js' );
-	const InspectionTrackingModel = require( _directory_base + '/app/v1.1/Http/Models/InspectionTrackingModel.js' );
-	const SummaryWeeklyModel = require( _directory_base + '/app/v1.1/Http/Models/SummaryWeeklyModel.js' );
-	const Helper = require( _directory_base + '/app/v1.1/Http/Libraries/HelperLib.js' );
+	const InspectionDModel = require( _directory_base + '/app/v1.2/Http/Models/InspectionDModel.js' );
+	const InspectionHModel = require( _directory_base + '/app/v1.2/Http/Models/InspectionHModel.js' );
+	const InspectionTrackingModel = require( _directory_base + '/app/v1.2/Http/Models/InspectionTrackingModel.js' );
+	const SummaryWeeklyModel = require( _directory_base + '/app/v1.2/Http/Models/SummaryWeeklyModel.js' );
+	const Helper = require( _directory_base + '/app/v1.2/Http/Libraries/HelperLib.js' );
 
 	// Node Module
 	const MomentTimezone = require( 'moment-timezone' );
@@ -297,11 +297,7 @@
 									"INSERT_USER": dt.USER_AUTH_CODE, 
 									"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 								} );
-								if( dt.USER_AUTH_CODE == '0101'){
-									console.log( total_meter_distance );
-									console.log( set );
-								}
-								// set.save();
+								set.save();
 							} );
 						}
 						else if ( dt.USER_ROLE == 'KEPALA_KEBUN' ) {
@@ -317,7 +313,7 @@
 								"INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
 								"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 							} );
-							// set.save();
+							set.save();
 						}
 						
 						else {
@@ -332,7 +328,7 @@
 								"INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
 								"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 							} );
-							// set.save();
+							set.save();
 						}
 					}
 				} );
