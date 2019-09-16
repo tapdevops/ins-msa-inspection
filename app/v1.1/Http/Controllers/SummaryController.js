@@ -301,7 +301,7 @@
 									console.log( total_meter_distance );
 									console.log( set );
 								}
-								// set.save();
+								set.save();
 							} );
 						}
 						else if ( dt.USER_ROLE == 'KEPALA_KEBUN' ) {
@@ -317,7 +317,7 @@
 								"INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
 								"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 							} );
-							// set.save();
+							set.save();
 						}
 						
 						else {
@@ -332,7 +332,7 @@
 								"INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
 								"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 							} );
-							// set.save();
+							set.save();
 						}
 					}
 				} );
