@@ -41,7 +41,7 @@
 			{
 				$limit: 1
 			}
-		]);
+		] );
 		var result = {
 			jarak_meter: 0,
 			durasi_menit: 0 ,
@@ -58,7 +58,6 @@
 			var summary = query_summary_weekly[0]
 			var jam = parseInt( summary.DURASI / 3600 );
 			var menit = parseInt( summary.DURASI % 3600 / 60 );
-			
 			var result = {
 				jarak_meter: summary.JARAK,
 				durasi_menit: menit ,
@@ -70,34 +69,78 @@
 				insert_user: summary.INSERT_USER,
 				insert_time: summary.INSERT_TIME
 			}
-		}
-
-		if( req.body.IS_VIEW ){
-			if ( req.body.IS_VIEW == 1 ) {
-				SummaryWeeklyModel.findOneAndUpdate( 
-					{
-						INSERT_USER: req.auth.USER_AUTH_CODE,
-						IS_VIEW : 0	
-					}, 
-					{
-						IS_VIEW: 1
-					}, 
-					{ new: true } 
-				).then( data => {
-					return res.json( {
-						"status": ( summary.IS_VIEW == 0 ? true : false ),
-						"message": "OK",
-						"data": result
-					} );
+			if( req.body.IS_VIEW ) {
+				if ( req.body.IS_VIEW == 1 ) {
+					SummaryWeeklyModel.findOneAndUpdate( 
+						{
+							INSERT_USER: req.auth.USER_AUTH_CODE,
+							IS_VIEW : 0	
+						}, 
+						{
+							IS_VIEW: 1
+						}, 
+						{ new: true } 
+					).then( data_summary => {
+						return res.json( {
+							"status": false, //( data.IS_VIEW == 0 ? true : false ),
+							"message": "OK",
+							"data": result
+						} );
+					} )
+				}
+			}
+			else {
+				return res.json( {
+					"status": false,
+					"message": "Error! Variabel IS_VIEW kosong",
+					"data": []
 				} );
 			}
 		}
-		else {
-			return res.json( {
-				"status": false,
-				"message": "Error! Variabel IS_VIEW kosong",
-				"data": []
+		else { 
+			var date_now = new Date();
+				date_now = parseInt( MomentTimezone( date_now ).tz( "Asia/Jakarta" ).format( "YYYYMMDD" ) + '235959' );
+			console.log( parseInt( date_now.toString().substr( 0, 8 ) ) );
+			var set = new SummaryWeeklyModel( {
+				"DURASI": 0,
+				"JARAK": 0 ,
+				"TOTAL_INSPEKSI": 0, 
+				"TOTAL_BARIS": 0,
+				"TARGET_INSPEKSI": 0,
+				"SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
+				"IS_VIEW": 0,
+				"INSERT_USER": req.auth.USER_AUTH_CODE, 
+				"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 			} );
+			set.save()
+			.then( data_summary => {
+				if( req.body.IS_VIEW ){
+					if ( req.body.IS_VIEW == 1 ) {
+						SummaryWeeklyModel.findOneAndUpdate( 
+							{
+								INSERT_USER: req.auth.USER_AUTH_CODE,
+							}, 
+							{
+								IS_VIEW: 1
+							}, 
+							{ new: true } 
+						).then( data => {
+							return res.json( {
+								"status": false ,
+								"message": "OK",
+								"data": result
+							} );
+						} )
+					}
+				}
+				else {
+					return res.json( {
+						"status": false,
+						"message": "Error! Variabel IS_VIEW kosong",
+						"data": []
+					} );
+				}
+			} )
 		}
 		
 	}
@@ -260,7 +303,6 @@
 							}
 						}
 					]);
-					
 					var total_baris = 0;
 					if ( query_total_inspeksi.length > 0 ) {
 						for ( index in query_total_inspeksi ) {
@@ -284,7 +326,8 @@
 							};
 							
 							( new NodeRestClient() ).get( url_ldap, args_ldap, function ( time_data, time_response ) {
-								var target_inspeksi = parseInt( time_data.data.results.jumlah_hari ) * 2;
+								//var target_inspeksi = parseInt( time_data.data.results.jumlah_hari ) * 2;
+								var target_inspeksi = 6 * 2;
 								
 								var set = new SummaryWeeklyModel( {
 									"DURASI": total_time,
@@ -297,11 +340,10 @@
 									"INSERT_USER": dt.USER_AUTH_CODE, 
 									"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 								} );
-								if( dt.USER_AUTH_CODE == '0101'){
-									console.log( total_meter_distance );
+								if( dt.USER_AUTH_CODE == '0126'){
 									console.log( set );
 								}
-								set.save();
+								// set.save();
 							} );
 						}
 						else if ( dt.USER_ROLE == 'KEPALA_KEBUN' ) {
@@ -317,7 +359,7 @@
 								"INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
 								"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 							} );
-							set.save();
+							// set.save();
 						}
 						
 						else {
@@ -332,7 +374,7 @@
 								"INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
 								"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 							} );
-							set.save();
+							// set.save();
 						}
 					}
 				} );
