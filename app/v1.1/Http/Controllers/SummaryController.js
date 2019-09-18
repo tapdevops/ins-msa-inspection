@@ -326,8 +326,7 @@
 							};
 							
 							( new NodeRestClient() ).get( url_ldap, args_ldap, function ( time_data, time_response ) {
-								//var target_inspeksi = parseInt( time_data.data.results.jumlah_hari ) * 2;
-								var target_inspeksi = 6 * 2;
+								var target_inspeksi = parseInt( time_data.data.results.jumlah_hari ) * 2;
 								
 								var set = new SummaryWeeklyModel( {
 									"DURASI": total_time,
@@ -343,7 +342,7 @@
 								if( dt.USER_AUTH_CODE == '0126'){
 									console.log( set );
 								}
-								// set.save();
+								set.save();
 							} );
 						}
 						else if ( dt.USER_ROLE == 'KEPALA_KEBUN' ) {
@@ -359,7 +358,7 @@
 								"INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
 								"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 							} );
-							// set.save();
+							set.save();
 						}
 						
 						else {
@@ -374,7 +373,7 @@
 								"INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
 								"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 							} );
-							// set.save();
+							set.save();
 						}
 					}
 				} );
