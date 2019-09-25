@@ -327,7 +327,6 @@
 							
 							( new NodeRestClient() ).get( url_ldap, args_ldap, function ( time_data, time_response ) {
 								var target_inspeksi = parseInt( time_data.data.results.jumlah_hari ) * 2;
-								
 								var set = new SummaryWeeklyModel( {
 									"DURASI": total_time,
 									"JARAK": parseInt( total_meter_distance / 1000 ) ,
