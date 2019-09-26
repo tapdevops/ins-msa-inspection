@@ -15,7 +15,8 @@
 
 	// Libraries
  	const HelperLib = require( _directory_base + '/app/v1.1/Http/Libraries/HelperLib.js' );
-
+	const KafkaServer = require( _directory_base + '/app/v1.1/Http/Libraries/KafkaServer.js' );
+	
 /*
  |--------------------------------------------------------------------------
  | Versi 1.0.0
@@ -66,7 +67,6 @@
 				DELETE_TIME: 0
 			} );
 
-
 			set.save()
 			.then( data => {
 				if ( !data ) {
@@ -75,6 +75,23 @@
 						message: config.app.error_message.create_404,
 						data: {}
 					} );
+				}
+				else {
+					var kafka_body = {
+						BINCD: req.body.BLOCK_INSPECTION_CODE_D,
+						BINCH: req.body.BLOCK_INSPECTION_CODE,
+						CTINC: req.body.CONTENT_INSPECTION_CODE,
+						VALUE: req.body.VALUE,
+						SSYNC: req.body.STATUS_SYNC,
+						STIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
+						INSUR: req.body.INSERT_USER,
+						INSTM: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
+						UPTUR: "",
+						UPTTM: 0,
+						DLTUR: "",
+						DLTTM: 0	
+					}
+					KafkaServer.producer( 'INS_MSA_INS_TR_BLOCK_INSPECTION_D', JSON.stringify( kafka_body ) );	
 				}
 
 				const set_log = new InspectionDLogModel( {

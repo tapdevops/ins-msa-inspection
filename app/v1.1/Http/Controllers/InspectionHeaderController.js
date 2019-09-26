@@ -15,6 +15,7 @@
 
 	// Libraries
  	const HelperLib = require( _directory_base + '/app/v1.1/Http/Libraries/HelperLib.js' );
+ 	const KafkaServer = require( _directory_base + '/app/v1.1/Http/Libraries/KafkaServer.js' );
 
 /*
  |--------------------------------------------------------------------------
@@ -87,15 +88,14 @@
 				LONG_START_INSPECTION: req.body.LONG_START_INSPECTION,
 				LAT_END_INSPECTION: req.body.LAT_END_INSPECTION,
 				LONG_END_INSPECTION: req.body.LONG_END_INSPECTION,
-				//ASSIGN_TO: req.body.ASSIGN_TO,
 				INSERT_USER: req.body.INSERT_USER,
 				INSERT_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
 				UPDATE_USER: "",
 				UPDATE_TIME: 0,
 				DELETE_USER: "",
 				DELETE_TIME: 0
-			} );
-
+			} );	
+			
 			set_data.save()
 			.then( data => {
 				if ( !data ) {
@@ -104,6 +104,34 @@
 						message: config.app.error_message.create_404,
 						data: {}
 					} );
+				}
+				else {
+					var kafka_body = {
+						BINCH: req.body.BLOCK_INSPECTION_CODE,
+						WERKS: req.body.WERKS,
+						AFD_CODE: req.body.AFD_CODE,
+						BLOCK_CODE: req.body.BLOCK_CODE,
+						AREAL: req.body.AREAL,
+						INSTP: req.body.INSPECTION_TYPE,
+						INSDT: HelperLib.date_format( req.body.INSPECTION_DATE, 'YYYYMMDDhhmmss' ),
+						INSSC: parseFloat( req.body.INSPECTION_SCORE ) || 0,
+						INSRS: req.body.INSPECTION_RESULT,
+						SSYNC: req.body.STATUS_SYNC,
+						STIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
+						STINS: HelperLib.date_format( req.body.START_INSPECTION, 'YYYYMMDDhhmmss' ),
+						EDINS: HelperLib.date_format( req.body.END_INSPECTION, 'YYYYMMDDhhmmss' ),
+						LATSI: req.body.LAT_START_INSPECTION,
+						LONSI: req.body.LONG_START_INSPECTION,
+						LATEI: req.body.LAT_END_INSPECTION,
+						LONEI: req.body.LONG_END_INSPECTION,
+						INSUR: req.body.INSERT_USER,
+						INSTM: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
+						UPTUR: "",
+						UPTTM: 0,
+						DLTUR: "",
+						DLTTM: 0	
+					}
+					KafkaServer.producer( 'INS_MSA_INS_TR_BLOCK_INSPECTION_H', JSON.stringify( kafka_body ) );	
 				}
 
 				// Insert Block Inspection H Log

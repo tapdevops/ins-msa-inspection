@@ -13,7 +13,8 @@
 	const Validator = require( 'ferds-validator');
 
 	// Libraries
- 	const HelperLib = require( _directory_base + '/app/v1.1/Http/Libraries/HelperLib.js' );
+	const HelperLib = require( _directory_base + '/app/v1.1/Http/Libraries/HelperLib.js' );
+	const KafkaServer = require( _directory_base + '/app/v1.1/Http/Libraries/KafkaServer.js' ); 
 
 /*
  |--------------------------------------------------------------------------
@@ -42,7 +43,7 @@
 		console.log( run_validator.error_lists );
 
 		if ( run_validator.status == false ) {
-			res.json( {
+			return res.json( {
 				status: false,
 				message: "Error! Periksa kembali inputan anda.",
 				data: []
@@ -75,14 +76,31 @@
 						data: {}
 					} );
 				}
-				res.send( {
+				else {
+					var kafka_body = {
+						TRINC: req.body.TRACK_INSPECTION_CODE,
+						BINCH: req.body.BLOCK_INSPECTION_CODE,
+						DTTRK: HelperLib.date_format( req.body.DATE_TRACK, 'YYYYMMDDhhmmss' ),
+						LATTR: req.body.LAT_TRACK || "",
+						LONTR: req.body.LONG_TRACK || "",
+						INSUR: req.body.INSERT_USER || "",
+						INSTM: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ) || 0,
+						UPTUR: "",
+						UPTTM: 0,
+						DLTUR: "",
+						DLTTM: 0
+					};
+				   KafkaServer.producer( 'INS_MSA_INS_TR_TRACK_INSPECTION', JSON.stringify( kafka_body ) );
+				}
+				return res.send( {
 					status: true,
 					message: config.app.error_message.create_200,
 					data: {}
 				} );
 
 			} ).catch( err => {
-				res.send( {
+				console.log(err)
+				return res.send( {
 					status: false,
 					message: config.app.error_message.create_500,
 					data: {}

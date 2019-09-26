@@ -14,7 +14,8 @@
 	const Validator = require( 'ferds-validator');
 
 	// Libraries
- 	const HelperLib = require( _directory_base + '/app/v1.1/Http/Libraries/HelperLib.js' );
+	const HelperLib = require( _directory_base + '/app/v1.1/Http/Libraries/HelperLib.js' );
+	const KafkaServer = require( _directory_base + '/app/v1.1/Http/Libraries/KafkaServer.js' );
 
 /*
  |--------------------------------------------------------------------------
@@ -62,11 +63,19 @@
  				insert_array.push( {
  					BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE,
  					GENBA_USER: data
- 				} );
+				} );
+				
+				// Send Kafka Message
+				var kafka_body = {
+					BINCH: req.body.BLOCK_INSPECTION_CODE,
+					GNBUR: data
+				}
+				KafkaServer.producer( 'INS_MSA_INS_TR_INSPECTION_GENBA', JSON.stringify( kafka_body ) );	
  			} );
  			var insert_db = await InspectionGenbaModel.insertMany( insert_array );
 
  			if ( insert_db.length > 0 ) {
+				
  				return res.send( {
 					status: true,
 					message: config.app.error_message.create_200,
