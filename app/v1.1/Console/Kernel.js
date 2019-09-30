@@ -53,8 +53,6 @@
         |
     */
         async job_update_transaksi_complete() {
-    
-
             var url = {
                 user_data: config.app.url[config.app.env].microservice_auth + '/api/v1.1/user/data',
                 time_daily: config.app.url[config.app.env].ldap_2 + '/dw/time-daily/get-active-date-min-7'

@@ -76,7 +76,9 @@
 	} );
 
 	//scheduling job_update_transaksi_complete() with cron every monday
-	NodeCron.schedule('* * * * *')
+	NodeCron.schedule( '* * * * *', async () => {
+		
+	} )
 
 	// Routing
 	require( './routes/api.js' )( App );
