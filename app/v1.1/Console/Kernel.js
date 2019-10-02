@@ -3,16 +3,16 @@
 | Variable
 |--------------------------------------------------------------------------
 */
-    
     // Models
-	const FindingModel = require( _directory_base + '/app/v1.1/Http/Models/Finding.js' );
-	const SummaryWeeklyModel = require( _directory_base + '/app/v1.1/Http/Models/SummaryWeekly.js' );
+	const InspectionDModel = require( _directory_base + '/app/v1.1/Http/Models/InspectionDModel.js' );
+	const InspectionHModel = require( _directory_base + '/app/v1.1/Http/Models/InspectionHModel.js' );
+	const InspectionTrackingModel = require( _directory_base + '/app/v1.1/Http/Models/InspectionTrackingModel.js' );
+	const SummaryWeeklyModel = require( _directory_base + '/app/v1.1/Http/Models/SummaryWeeklyModel.js' );
+	const Helper = require( _directory_base + '/app/v1.1/Http/Libraries/HelperLib.js' );
 
 	// Node Module
 	const MomentTimezone = require( 'moment-timezone' );
-
-	// Libraries
-	const HelperLib = require( _directory_base + '/app/v1.1/Http/Libraries/HelperLib.js' );
+	const NodeRestClient = require( 'node-rest-client' ).Client;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,24 +25,26 @@
 | SSH into your server to add additional Cron entries.
 |
 */
+    
+    class Kernel {
+
     /** 
  	  * Compute Distance
 	  * --------------------------------------------------------------------
 	  * Hitung jarak antara 2 latitude dan longitude.
 	*/
-    exports.compute_distance = ( lat1, lon1, lat2, lon2) => {
-        var R = 6371; // Lingkar Bumi (KM)
-        var dLat = ( lat2 - lat1 ) * Math.PI / 180;
-        var dLon = ( lon2 - lon1 ) * Math.PI / 180;
-        var a = Math.sin( dLat/2 ) * Math.sin( dLat/2 ) +
-            Math.cos( lat1 * Math.PI / 180 ) * Math.cos( lat2 * Math.PI / 180 ) *
-            Math.sin( dLon / 2 ) * Math.sin(dLon/2);
-        var c = 2 * Math.atan2( Math.sqrt( a ), Math.sqrt( 1 - a ) );
-        var d = R * c;
+        // async compute_distance( lat1, lon1, lat2, lon2) {
+        //     var R = 6371; // Lingkar Bumi (KM)
+        //     var dLat = ( lat2 - lat1 ) * Math.PI / 180;
+        //     var dLon = ( lon2 - lon1 ) * Math.PI / 180;
+        //     var a = Math.sin( dLat/2 ) * Math.sin( dLat/2 ) +
+        //         Math.cos( lat1 * Math.PI / 180 ) * Math.cos( lat2 * Math.PI / 180 ) *
+        //         Math.sin( dLon / 2 ) * Math.sin(dLon/2);
+        //     var c = 2 * Math.atan2( Math.sqrt( a ), Math.sqrt( 1 - a ) );
+        //     var d = R * c;
 
-        return Math.round( d * 1000 );
-    }
-    class Kernel {
+        //     return Math.round( d * 1000 );
+        // }
     /*
         |--------------------------------------------------------------------------
         | Update Transaksi Complete
@@ -52,7 +54,8 @@
         | jam 5 pagi.
         |
     */
-        async job_update_transaksi_complete() {
+        job_update_transaksi_complete( token ) {
+            console.log( "running crone..." );
             var url = {
                 user_data: config.app.url[config.app.env].microservice_auth + '/api/v1.1/user/data',
                 time_daily: config.app.url[config.app.env].ldap_2 + '/dw/time-daily/get-active-date-min-7'
@@ -60,7 +63,7 @@
             var args = {
                 headers: { 
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer " + req.token 
+                    "Authorization": "Bearer " + token
                 }
             };
             var date_now = new Date();
@@ -68,7 +71,6 @@
             var date_min_1_week = new Date();
                 date_min_1_week.setDate( date_min_1_week.getDate() - 7 );
                 date_min_1_week = parseInt( MomentTimezone( date_min_1_week ).tz( "Asia/Jakarta" ).format( "YYYYMMDD" ) + '000000' );
-
             ( new NodeRestClient() ).get( url.user_data, args, async function ( data, response ) {
                 if ( data.status == true ) {
                     data = data.data;
@@ -131,10 +133,23 @@
                             for ( var k = 0; k <= ( queryTrack.length - 1 ); k++ ) {
                                 if ( k < ( queryTrack.length - 1 ) ) {
                                     var l = k + 1;
-                                    var track_1 = queryTrack[k];
+                                    // var track_1 = queryTrack[k];
                                     var track_2 = queryTrack[l];
-                                    var compute_distance = exports.compute_distance( track_1.LAT_TRACK, track_1.LONG_TRACK, track_2.LAT_TRACK, track_2.LONG_TRACK );
-                                    total_meter_distance += compute_distance;
+                                    // var hitung_jarak = this.compute_distance( track_1.LAT_TRACK, track_1.LONG_TRACK, track_2.LAT_TRACK, track_2.LONG_TRACK );
+                                    let lat2 = queryTrack[l].LAT_TRACK;
+                                    let lon2 = queryTrack[l].LONG_TRACK;
+                                    let lat1 = queryTrack[k].LAT_TRACK;
+                                    let lon1 = queryTrack[k].LONG_TRACK;
+                                    var R = 6371; // Lingkar Bumi (KM)
+                                    var dLat = ( lat2 - lat1 ) * Math.PI / 180;
+                                    var dLon = ( lon2 - lon1 ) * Math.PI / 180;
+                                    var a = Math.sin( dLat/2 ) * Math.sin( dLat/2 ) +
+                                        Math.cos( lat1 * Math.PI / 180 ) * Math.cos( lat2 * Math.PI / 180 ) *
+                                        Math.sin( dLon / 2 ) * Math.sin(dLon/2);
+                                    var c = 2 * Math.atan2( Math.sqrt( a ), Math.sqrt( 1 - a ) );
+                                    var d = R * c;
+                                    
+                                    total_meter_distance += Math.round( d * 1000 );
                                 }
                             }
                         }
@@ -187,19 +202,18 @@
                         ]);
                         var total_baris = 0;
                         if ( query_total_inspeksi.length > 0 ) {
-                            for ( index in query_total_inspeksi ) {
+                            for ( let index = 0; index < query_total_inspeksi.length; index++ ) {
                                 total_baris += query_total_inspeksi[index].COUNT;
                             }
                         }
-
-                        var location_code = dt.LOCATION_CODE.split( ',' );
+                        let stringLocationCode = dt.LOCATION_CODE.toString();
+                        var location_code = stringLocationCode.split( ',' );
                         if ( location_code.length > 0 ) {
                             if ( dt.USER_ROLE == 'ASISTEN_LAPANGAN' ) {
                                 var ba_code = location_code[0].substr( 0, 4 );
-                                if( dt.USER_AUTH_CODE == '0101' ){
-                                    console.log( ba_code );
-                                }
-                                
+                                // if( dt.USER_AUTH_CODE == '0101' ){
+                                //     console.log( ba_code );
+                                // }
                                 var url_ldap = url.time_daily + '/' + ba_code;
                                 var args_ldap = {
                                     headers: { 
@@ -212,6 +226,7 @@
                                     var set = new SummaryWeeklyModel( {
                                         "DURASI": total_time,
                                         "JARAK": parseInt( total_meter_distance / 1000 ) ,
+                                        // "JARAK": 1000,
                                         "TOTAL_INSPEKSI": query_total_inspeksi.length, 
                                         "TOTAL_BARIS": total_baris,
                                         "TARGET_INSPEKSI": target_inspeksi,
@@ -220,9 +235,6 @@
                                         "INSERT_USER": dt.USER_AUTH_CODE, 
                                         "INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
                                     } );
-                                    if( dt.USER_AUTH_CODE == '0126'){
-                                        console.log( set );
-                                    }
                                     set.save();
                                 } );
                             }
@@ -231,6 +243,7 @@
                                 var set = new SummaryWeeklyModel( {
                                     "DURASI": total_time,
                                     "JARAK": parseInt( total_meter_distance / 1000 ) ,
+                                    // "JARAK": 1000 ,
                                     "TOTAL_INSPEKSI": query_total_inspeksi.length, 
                                     "TOTAL_BARIS": total_baris,
                                     "TARGET_INSPEKSI": target_inspeksi,
@@ -246,6 +259,7 @@
                                 var set = new SummaryWeeklyModel( {
                                     "DURASI": total_time,
                                     "JARAK": parseInt( total_meter_distance / 1000 ) ,
+                                    // "JARAK": 1000,
                                     "TOTAL_INSPEKSI": query_total_inspeksi.length, 
                                     "TOTAL_BARIS": total_baris,
                                     "TARGET_INSPEKSI": 0,
@@ -262,3 +276,5 @@
             } );
         }
     }
+
+    module.exports = new Kernel();
