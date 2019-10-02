@@ -82,8 +82,7 @@
 	} );
 
 	//scheduling job_update_transaksi_complete() with cron
-	// NodeCron.schedule( '5 0 * * SUN', async () => {
-	NodeCron.schedule( '* * * * *', async () => {
+	NodeCron.schedule( '5 0 * * SUN', async () => {
 		let claims = {
 			USERNAME: "sentot.santosa",
 			USER_AUTH_CODE: "TAC00011",
@@ -91,7 +90,6 @@
 		};
 		var token = Security.generate_token( claims ); // Generate Token
 		Kernel.job_update_transaksi_complete( token );
-		// console.log( "running node-cron..." );
 	} );
 
 	// Routing

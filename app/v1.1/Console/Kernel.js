@@ -55,7 +55,6 @@
         |
     */
         job_update_transaksi_complete( token ) {
-            console.log( "running crone..." );
             var url = {
                 user_data: config.app.url[config.app.env].microservice_auth + '/api/v1.1/user/data',
                 time_daily: config.app.url[config.app.env].ldap_2 + '/dw/time-daily/get-active-date-min-7'
@@ -133,8 +132,6 @@
                             for ( var k = 0; k <= ( queryTrack.length - 1 ); k++ ) {
                                 if ( k < ( queryTrack.length - 1 ) ) {
                                     var l = k + 1;
-                                    // var track_1 = queryTrack[k];
-                                    var track_2 = queryTrack[l];
                                     // var hitung_jarak = this.compute_distance( track_1.LAT_TRACK, track_1.LONG_TRACK, track_2.LAT_TRACK, track_2.LONG_TRACK );
                                     let lat2 = queryTrack[l].LAT_TRACK;
                                     let lon2 = queryTrack[l].LONG_TRACK;
@@ -211,9 +208,6 @@
                         if ( location_code.length > 0 ) {
                             if ( dt.USER_ROLE == 'ASISTEN_LAPANGAN' ) {
                                 var ba_code = location_code[0].substr( 0, 4 );
-                                // if( dt.USER_AUTH_CODE == '0101' ){
-                                //     console.log( ba_code );
-                                // }
                                 var url_ldap = url.time_daily + '/' + ba_code;
                                 var args_ldap = {
                                     headers: { 
@@ -226,7 +220,6 @@
                                     var set = new SummaryWeeklyModel( {
                                         "DURASI": total_time,
                                         "JARAK": parseInt( total_meter_distance / 1000 ) ,
-                                        // "JARAK": 1000,
                                         "TOTAL_INSPEKSI": query_total_inspeksi.length, 
                                         "TOTAL_BARIS": total_baris,
                                         "TARGET_INSPEKSI": target_inspeksi,
@@ -258,8 +251,7 @@
                             else {
                                 var set = new SummaryWeeklyModel( {
                                     "DURASI": total_time,
-                                    "JARAK": parseInt( total_meter_distance / 1000 ) ,
-                                    // "JARAK": 1000,
+                                    "JARAK": parseInt( total_meter_distance / 1000 ),
                                     "TOTAL_INSPEKSI": query_total_inspeksi.length, 
                                     "TOTAL_BARIS": total_baris,
                                     "TARGET_INSPEKSI": 0,
