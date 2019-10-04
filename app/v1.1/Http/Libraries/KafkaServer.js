@@ -53,7 +53,7 @@ const Kafka = require( 'kafka-node' );
 			// Class
 			const Producer = Kafka.Producer;
 			const Client = new Kafka.KafkaClient( { 
-				kafkaHost: '149.129.252.13:9092' 
+				kafkaHost: config.app.kafka[config.app.env].server_host
 			} );
 
 			// Variable
@@ -79,7 +79,7 @@ const Kafka = require( 'kafka-node' );
 			producer_kafka_client.on( 'error', function( err ) {
 				console.log( err );
 				console.log( '[KAFKA PRODUCER] - Connection Error.' );
-				throw err;
+				//throw err;
 			});
 		}
 
