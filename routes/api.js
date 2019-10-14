@@ -19,6 +19,7 @@
 		},
 		v_1_1: {
 			ExportController: require( _directory_base + '/app/v1.1/Http/Controllers/ExportController.js' ),
+			ExportKafkaController: require( _directory_base + '/app/v1.1/Http/Controllers/ExportKafkaController.js' ),
 			InspectionDetailController: require( _directory_base + '/app/v1.1/Http/Controllers/InspectionDetailController.js' ),
 			InspectionGenbaController: require( _directory_base + '/app/v1.1/Http/Controllers/InspectionGenbaController.js' ),
 			InspectionHeaderController: require( _directory_base + '/app/v1.1/Http/Controllers/InspectionHeaderController.js' ),
@@ -134,6 +135,12 @@
 			 // Export
 			 app.get( '/api/v1.1/export/premi/:first_date/:end_date', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportController.premi );
 			 app.get( '/api/v1.1/export/tap-dw/tr-inspection/:first_date/:end_date', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportController.tap_dw_tr_inspection );
+
+			 //Export-Kafka
+			 app.get( '/api/v1.1/export-kafka/inspection-detail', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportKafkaController.export_inspection_detail );
+			 app.get( '/api/v1.1/export-kafka/inspection-header', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportKafkaController.export_inspection_header );
+			 app.get( '/api/v1.1/export-kafka/inspection-genba', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportKafkaController.export_inspection_genba );
+			 app.get( '/api/v1.1/export-kafka/inspection-tracking', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportKafkaController.export_inspection_tracking );
 			 
 		 /*
 
