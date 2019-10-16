@@ -15,7 +15,7 @@
 				ssl: false
 			},
 			qa: {
-				url: 'mongodb://s_inspeksi:1nsp3k5i2019@dbappqa.tap-agri.com:4848/s_inspeksi?authSource=s_inspeksi',
+				url: '',
 				ssl: false
 			},
 			prod: {
