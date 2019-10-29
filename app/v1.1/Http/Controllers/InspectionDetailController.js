@@ -51,88 +51,99 @@
 			} );
 		}
 		else {
-			var auth = req.auth;
-			const set = new InspectionDModel( {
-				BLOCK_INSPECTION_CODE_D: req.body.BLOCK_INSPECTION_CODE_D,
-				BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE,
-				CONTENT_INSPECTION_CODE: req.body.CONTENT_INSPECTION_CODE,
-				VALUE: req.body.VALUE,
-				STATUS_SYNC: req.body.STATUS_SYNC,
-				SYNC_TIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
-				INSERT_USER: req.body.INSERT_USER,
-				INSERT_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
-				UPDATE_USER: req.body.INSERT_USER,
-				UPDATE_TIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
-				DELETE_USER: "",
-				DELETE_TIME: 0
-			} );
-
-			set.save()
+			InspectionDModel.findOne( {
+				BLOCK_INSPECTION_CODE_D: req.body.BLOCK_INSPECTION_CODE_D
+			} )
 			.then( data => {
-				if ( !data ) {
-					return res.send( {
-						status: false,
-						message: config.app.error_message.create_404,
-						data: {}
-					} );
-				}
-				else {
-					var kafka_body = {
-						BINCD: req.body.BLOCK_INSPECTION_CODE_D,
-						BINCH: req.body.BLOCK_INSPECTION_CODE,
-						CTINC: req.body.CONTENT_INSPECTION_CODE,
-						VALUE: req.body.VALUE,
-						SSYNC: req.body.STATUS_SYNC,
-						STIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
-						INSUR: req.body.INSERT_USER,
-						INSTM: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
-						UPTUR: "",
-						UPTTM: 0,
-						DLTUR: "",
-						DLTTM: 0	
-					}
-					KafkaServer.producer( 'INS_MSA_INS_TR_BLOCK_INSPECTION_D', JSON.stringify( kafka_body ) );	
-				}
-
-				const set_log = new InspectionDLogModel( {
-					BLOCK_INSPECTION_CODE_D: req.body.BLOCK_INSPECTION_CODE_D,
-					PROSES: 'INSERT',
-					IMEI: auth.IMEI,
-					SYNC_TIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
-					INSERT_USER: req.body.INSERT_USER,
-					INSERT_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
-				} );
-
-				set_log.save()
-				.then( data_log => {
-					if ( !data_log ) {
-						return res.send( {
-							status: false,
-							message: config.app.error_message.create_404 + ' - Log',
-							data: {}
-						} );
-					}
+				if( data ) {
 					res.send( {
 						status: true,
-						message: config.app.error_message.create_200,
-						data: {}
+						message: 'Data duplikat',
+						data: []
+					} )
+				} else {
+					var auth = req.auth;
+					const set = new InspectionDModel( {
+						BLOCK_INSPECTION_CODE_D: req.body.BLOCK_INSPECTION_CODE_D,
+						BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE,
+						CONTENT_INSPECTION_CODE: req.body.CONTENT_INSPECTION_CODE,
+						VALUE: req.body.VALUE,
+						STATUS_SYNC: req.body.STATUS_SYNC,
+						SYNC_TIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
+						INSERT_USER: req.body.INSERT_USER,
+						INSERT_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
+						UPDATE_USER: req.body.INSERT_USER,
+						UPDATE_TIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
+						DELETE_USER: "",
+						DELETE_TIME: 0
 					} );
-				} ).catch( err => {
-					res.send( {
-						status: false,
-						message: config.app.error_message.create_500 + ' - 2',
-						data: {}
+					set.save()
+					.then( data => {
+						if ( !data ) {
+							return res.send( {
+								status: false,
+								message: config.app.error_message.create_404,
+								data: {}
+							} );
+						}
+						else {
+							var kafka_body = {
+								BINCD: req.body.BLOCK_INSPECTION_CODE_D,
+								BINCH: req.body.BLOCK_INSPECTION_CODE,
+								CTINC: req.body.CONTENT_INSPECTION_CODE,
+								VALUE: req.body.VALUE,
+								SSYNC: req.body.STATUS_SYNC,
+								STIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
+								INSUR: req.body.INSERT_USER,
+								INSTM: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
+								UPTUR: "",
+								UPTTM: 0,
+								DLTUR: "",
+								DLTTM: 0	
+							}
+							KafkaServer.producer( 'INS_MSA_INS_TR_BLOCK_INSPECTION_D', JSON.stringify( kafka_body ) );	
+						}
+
+						const set_log = new InspectionDLogModel( {
+							BLOCK_INSPECTION_CODE_D: req.body.BLOCK_INSPECTION_CODE_D,
+							PROSES: 'INSERT',
+							IMEI: auth.IMEI,
+							SYNC_TIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
+							INSERT_USER: req.body.INSERT_USER,
+							INSERT_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
+						} );
+
+						set_log.save()
+						.then( data_log => {
+							if ( !data_log ) {
+								return res.send( {
+									status: false,
+									message: config.app.error_message.create_404 + ' - Log',
+									data: {}
+								} );
+							}
+							res.send( {
+								status: true,
+								message: config.app.error_message.create_200,
+								data: {}
+							} );
+						} ).catch( err => {
+							res.send( {
+								status: false,
+								message: config.app.error_message.create_500 + ' - 2',
+								data: {}
+							} );
+						} );
+					} ).catch( err => {
+						res.status( 500 ).send( {
+							status: false,
+							message: config.app.error_message.create_500 + ' - 2',
+							data: {}
+						} );
 					} );
-				} );
-			} ).catch( err => {
-				res.status( 500 ).send( {
-					status: false,
-					message: config.app.error_message.create_500 + ' - 2',
-					data: {}
-				} );
-			} );
+				}
+			} )	
 		}
-		
 	};
 
  	/** 
