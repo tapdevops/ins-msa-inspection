@@ -28,7 +28,6 @@
 	  * --------------------------------------------------------------------
 	*/
  	exports.create = async ( req, res ) => {
-
  		if ( !req.body.BLOCK_INSPECTION_CODE ) {
  			return res.status( 200 ).json( {
  				status: false,
