@@ -82,7 +82,7 @@
 	} );
 
 	//scheduling job_update_transaksi_complete() with cron
-	NodeCron.schedule( '0 1 * * *', async () => {
+	NodeCron.schedule( '5 0 * * MON', async () => {
 		let claims = {
 			USERNAME: "sentot.santosa",
 			USER_AUTH_CODE: "TAC00011",
