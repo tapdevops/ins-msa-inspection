@@ -81,9 +81,16 @@
 						}, 
 						{ new: true } 
 					).then( data_summary => {
+						if( data_summary ) {
+							return res.json( {
+								"status": true,
+								"message": "OK",
+								"data": result
+							} );	
+						}
 						return res.json( {
-							"status": false, //( data.IS_VIEW == 0 ? true : false ),
-							"message": "OK",
+							"status": true,//( data_summary.IS_VIEW == 0 ? true : false ),
+							"message": 'OK',
 							"data": result
 						} );
 					} )
@@ -108,38 +115,24 @@
 				"TOTAL_BARIS": 0,
 				"TARGET_INSPEKSI": 0,
 				"SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
-				"IS_VIEW": 0,
+				"IS_VIEW": 1,
 				"INSERT_USER": req.auth.USER_AUTH_CODE, 
 				"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 			} );
 			set.save()
 			.then( data_summary => {
-				if( req.body.IS_VIEW ){
-					if ( req.body.IS_VIEW == 1 ) {
-						SummaryWeeklyModel.findOneAndUpdate( 
-							{
-								INSERT_USER: req.auth.USER_AUTH_CODE,
-							}, 
-							{
-								IS_VIEW: 1
-							}, 
-							{ new: true } 
-						).then( data => {
-							return res.json( {
-								"status": false ,
-								"message": "OK",
-								"data": result
-							} );
-						} )
-					}
-				}
-				else {
-					return res.json( {
-						"status": false,
-						"message": "Error! Variabel IS_VIEW kosong",
-						"data": []
-					} );
-				}
+				return res.json( {
+					"status": true ,
+					"message": "OK",
+					"data": data_summary
+				} );
+			} )
+			.catch( error => {
+				return res.json( {
+					status: false,
+					message: error.message,
+					data: []
+				} )
 			} )
 		}
 		

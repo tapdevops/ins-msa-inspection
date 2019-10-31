@@ -22,9 +22,6 @@
 	  * --------------------------------------------------------------------
 	*/
  	exports.find = async ( req, res ) => {
-
- 		console.log("XXX");
-
  		var url_query = req.query;
 		var url_query_length = Object.keys( url_query ).length;
 		var query = {};

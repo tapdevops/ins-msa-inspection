@@ -39,6 +39,17 @@
                 $project: {
                     _id: 0
                 }
+            },
+            {
+                $sort: {
+                    _id: -1
+                }
+            },
+            {
+                $skip: 66000
+            },
+            {
+                $limit: 3000
             }
         ] );
         query.forEach( function( data ) {
@@ -70,9 +81,20 @@
                 $project: {
                     _id: 0
                 }
+            },
+            {
+                $sort: {
+                    _id: -1
+                }
+            },
+            {
+                $skip: 6000
+            },
+            {
+                $limit: 133
             }
         ] );
-
+        let i = 0;
         query.forEach( function( data ) {
             let kafka_body = {
                 BINCH: data.BLOCK_INSPECTION_CODE,
@@ -99,6 +121,7 @@
                 DLTUR: data.DELETE_USER,
                 DLTTM: data.DELETE_TIME	
             }
+            console.log( ++i );
             KafkaServer.producer( 'INS_MSA_INS_TR_BLOCK_INSPECTION_H', JSON.stringify( kafka_body ) );
         } );
         res.send( {
@@ -128,37 +151,83 @@
             message: true
         } )
     }
+    function sendTrackDataToKafka( totalSkip, length ) {
+        // if( length === 0 ) return;
+        var intervalId = setInterval( async function() {
+            const query = await Models.InspectionTracking.aggregate( [
+                {
+                    $project: {
+                        _id: 0
+                    }
+                },
+                {
+                    $sort: {
+                        _id: -1
+                    }
+                },
+                {
+                    $skip: totalSkip
+                },
+                {
+                    $limit: 3000
+                }
+            ] );
+            query.forEach( function( data ) {
+                let kafka_body = {
+                    TRINC: data.TRACK_INSPECTION_CODE,
+                    BINCH: data.BLOCK_INSPECTION_CODE,
+                    DTTRK: data.DATE_TRACK,
+                    LATTR: data.LAT_TRACK,
+                    LONTR: data.LONG_TRACK,
+                    INSUR: data.INSERT_USER,
+                    INSTM: data.INSERT_TIME, 
+                    UPTUR: data.UPDATE_USER,
+                    UPTTM: data.UPDATE_TIME,
+                    DLTUR: data.DELETE_USER,
+                    DLTTM: data.DELETE_TIME
+                };
+                KafkaServer.producer( 'INS_MSA_INS_TR_TRACK_INSPECTION', JSON.stringify( kafka_body ) );
+            } )
+            console.log( 'length: ' + --length );
+            totalSkip += 3000;
+            length -= 1;
+            if( length === 0 ) {
+                window.clearInterval( intervalId );
+            }
+        }, 10000 );
+    }
     
     //export inspection_tracking to kafka
-    exports.export_inspection_tracking = async ( req, res ) => {
-        const query = await Models.InspectionTracking.aggregate( [
-            {
-                $project: {
-                    _id: 0
-                }
-            }
-        ] );
-
-        query.forEach( function( data ) {
-            let kafka_body = {
-                TRINC: data.TRACK_INSPECTION_CODE,
-                BINCH: data.BLOCK_INSPECTION_CODE,
-                DTTRK: data.DATE_TRACK,
-                LATTR: data.LAT_TRACK,
-                LONTR: data.LONG_TRACK,
-                INSUR: data.INSERT_USER,
-                INSTM: data.INSERT_TIME, 
-                UPTUR: data.UPDATE_USER,
-                UPTTM: data.UPDATE_TIME,
-                DLTUR: data.DELETE_USER,
-                DLTTM: data.DELETE_TIME
-            };
-			KafkaServer.producer( 'INS_MSA_INS_TR_TRACK_INSPECTION', JSON.stringify( kafka_body ) );
-        } )
-
+    exports.export_inspection_tracking = async ( req, res ) => {   
+        sendTrackDataToKafka( 0, 2 );
         res.send( {
-            message: true
-        } )
+            message: 'Sukses'
+        } );
+        // const query = await Models.InspectionTracking.aggregate( [
+        //     {
+        //         $project: {
+        //             _id: 0
+        //         }
+        //     }
+        // ] );
+
+        // query.forEach( function( data ) {
+        //     let kafka_body = {
+        //         TRINC: data.TRACK_INSPECTION_CODE,
+        //         BINCH: data.BLOCK_INSPECTION_CODE,
+        //         DTTRK: data.DATE_TRACK,
+        //         LATTR: data.LAT_TRACK,
+        //         LONTR: data.LONG_TRACK,
+        //         INSUR: data.INSERT_USER,
+        //         INSTM: data.INSERT_TIME, 
+        //         UPTUR: data.UPDATE_USER,
+        //         UPTTM: data.UPDATE_TIME,
+        //         DLTUR: data.DELETE_USER,
+        //         DLTTM: data.DELETE_TIME
+        //     };
+		// 	KafkaServer.producer( 'INS_MSA_INS_TR_TRACK_INSPECTION', JSON.stringify( kafka_body ) );
+        // } )
+        
     }
 
     

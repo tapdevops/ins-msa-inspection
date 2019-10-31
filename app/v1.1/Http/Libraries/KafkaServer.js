@@ -71,9 +71,9 @@ const KafkaErrorLog = require( _directory_base + '/app/v1.1/Http/Models/KafkaErr
 			producer_kafka_client.on( 'ready', async function() {
 				const push_status = producer_kafka_client.send( payloads, ( err, data ) => {
 					if ( err ) {
-						console.log( '[KAFKA PRODUCER] - Broker Update Failed.' );
+						// console.log( '[KAFKA PRODUCER] - Broker Update Failed.' );
 					} else {
-						console.log( '[KAFKA PRODUCER] - Broker Update Success.' );
+						// console.log( '[KAFKA PRODUCER] - Broker Update Success.' );
 					}
 				} );
 			} );

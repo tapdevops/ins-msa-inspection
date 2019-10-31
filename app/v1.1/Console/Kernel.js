@@ -74,195 +74,206 @@
                 if ( data.status == true ) {
                     data = data.data;
                     data.forEach( async function( dt ) {
-                        var authCode = dt.USER_AUTH_CODE;
-                        var queryTime = await InspectionHModel.aggregate( [
-                            {
-                                "$match": {
-                                    "INSERT_USER": authCode
-                                }
-                            },
-                            {
-                                "$project":{
-                                    "_id": 0,
-                                    "START_INSPECTION": 1,
-                                    "END_INSPECTION": 1
-                                }
-                            },
-                            {
-                                "$sort": {
-                                    "START_INSPECTION": -1
-                                }
-                            }
-                        ] );
-                        var total_time = 0;
-                        
-                        if( queryTime.length > 0 ){
-                            for( var j = 0; j < queryTime.length; j++ ){
-                                var inspection = queryTime[j];
-                                var hasil = Math.abs( inspection.END_INSPECTION - inspection.START_INSPECTION );
-                                total_time += hasil;
-                            }
-                        }
-                        var queryTrack = await InspectionTrackingModel.aggregate( [
-                            {
-                                "$sort": {
-                                    "INSERT_TIME": -1
-                                }
-                            },
-                            {
-                                "$match": {
-                                    "INSERT_USER": authCode
-                                }
-                            },
-                            {
-                                "$project": {
-                                    "_id": 0,
-                                    "TRACK_INSPECTION_CODE": 1,
-                                    "BLOCK_INSPECTION_CODE": 1,
-                                    "DATE_TRACK": 1,
-                                    "LAT_TRACK": 1,
-                                    "LONG_TRACK": 1
-                                }
-                            }
-                        ] );
-                        var total_meter_distance = 0;
-            
-                        if ( queryTrack.length > 0 ) {
-
-                            for ( var k = 0; k <= ( queryTrack.length - 1 ); k++ ) {
-                                if ( k < ( queryTrack.length - 1 ) ) {
-                                    var l = k + 1;
-                                    // var hitung_jarak = this.compute_distance( track_1.LAT_TRACK, track_1.LONG_TRACK, track_2.LAT_TRACK, track_2.LONG_TRACK );
-                                    let lat2 = queryTrack[l].LAT_TRACK;
-                                    let lon2 = queryTrack[l].LONG_TRACK;
-                                    let lat1 = queryTrack[k].LAT_TRACK;
-                                    let lon1 = queryTrack[k].LONG_TRACK;
-                                    var R = 6371; // Lingkar Bumi (KM)
-                                    var dLat = ( lat2 - lat1 ) * Math.PI / 180;
-                                    var dLon = ( lon2 - lon1 ) * Math.PI / 180;
-                                    var a = Math.sin( dLat/2 ) * Math.sin( dLat/2 ) +
-                                        Math.cos( lat1 * Math.PI / 180 ) * Math.cos( lat2 * Math.PI / 180 ) *
-                                        Math.sin( dLon / 2 ) * Math.sin(dLon/2);
-                                    var c = 2 * Math.atan2( Math.sqrt( a ), Math.sqrt( 1 - a ) );
-                                    var d = R * c;
-                                    
-                                    total_meter_distance += Math.round( d * 1000 );
-                                }
-                            }
-                        }
-                        
-                        var query_total_inspeksi = await InspectionHModel.aggregate( [
-                            {	
-                                $group: {
-                                    "_id": {
-                                        "WERKS": "$WERKS",
-                                        "AFD_CODE": "$AFD_CODE",
-                                        "BLOCK_CODE": "$BLOCK_CODE",
-                                        "INSERT_USER": "$INSERT_USER",
-                                        "INSPECTION_DATE": {
-                                            "$toInt": {
-                                                "$substr": [
-                                                    {
-                                                        "$toLong": "$INSPECTION_DATE"
-                                                    },
-                                                    0,
-                                                    8
-                                                ]
-                                            }
+                        SummaryWeeklyModel.findOne( {
+                            INSERT_USER: dt.USER_AUTH_CODE,
+                            SUMMARY_DATE: parseInt( date_now.toString().substr( 0, 8 ) )
+                        } )
+                        .then( async ( summary ) => {
+                            if( !summary ) {
+                                var authCode = dt.USER_AUTH_CODE;
+                                var queryTime = await InspectionHModel.aggregate( [
+                                    {
+                                        "$match": {
+                                            "INSERT_USER": authCode
                                         }
                                     },
-                                    "COUNT": {
-                                        "$sum": 1
+                                    {
+                                        "$project":{
+                                            "_id": 0,
+                                            "START_INSPECTION": 1,
+                                            "END_INSPECTION": 1
+                                        }
                                     },
-                                }
-                            },
-                            {
-                                $project: {
-                                    "_id": 0,
-                                    "WERKS": "$_id.WERKS",
-                                    "AFD_CODE": "$_id.AFD_CODE",
-                                    "BLOCK_CODE": "$_id.BLOCK_CODE",
-                                    "INSPECTION_DATE": "$_id.INSPECTION_DATE",
-                                    "INSERT_USER": "$_id.INSERT_USER",
-                                    "COUNT": "$COUNT"
-                                }
-                            },
-                            {
-                                $match: {
-                                    "INSPECTION_DATE": {
-                                        "$gte": parseInt( date_min_1_week.toString().substr( 0, 8 ) ),
-                                        "$lte": parseInt( date_now.toString().substr( 0, 8 ) )
-                                    },
-                                    "INSERT_USER": authCode
-                                }
-                            }
-                        ]);
-                        var total_baris = 0;
-                        if ( query_total_inspeksi.length > 0 ) {
-                            for ( let index = 0; index < query_total_inspeksi.length; index++ ) {
-                                total_baris += query_total_inspeksi[index].COUNT;
-                            }
-                        }
-                        let stringLocationCode = dt.LOCATION_CODE.toString();
-                        var location_code = stringLocationCode.split( ',' );
-                        if ( location_code.length > 0 ) {
-                            if ( dt.USER_ROLE == 'ASISTEN_LAPANGAN' ) {
-                                var ba_code = location_code[0].substr( 0, 4 );
-                                var url_ldap = url.time_daily + '/' + ba_code;
-                                var args_ldap = {
-                                    headers: { 
-                                        "Content-Type": "application/json" 
+                                    {
+                                        "$sort": {
+                                            "START_INSPECTION": -1
+                                        }
                                     }
-                                };
+                                ] );
+                                var total_time = 0;
                                 
-                                ( new NodeRestClient() ).get( url_ldap, args_ldap, function ( time_data, time_response ) {
-                                    var target_inspeksi = parseInt( time_data.data.results.jumlah_hari ) * 2;
-                                    var set = new SummaryWeeklyModel( {
-                                        "DURASI": total_time,
-                                        "JARAK": parseInt( total_meter_distance / 1000 ) ,
-                                        "TOTAL_INSPEKSI": query_total_inspeksi.length, 
-                                        "TOTAL_BARIS": total_baris,
-                                        "TARGET_INSPEKSI": target_inspeksi,
-                                        "SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
-                                        "IS_VIEW": 0,
-                                        "INSERT_USER": dt.USER_AUTH_CODE, 
-                                        "INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
-                                    } );
-                                    set.save();
-                                } );
+                                if( queryTime.length > 0 ){
+                                    for( var j = 0; j < queryTime.length; j++ ){
+                                        var inspection = queryTime[j];
+                                        var hasil = Math.abs( inspection.END_INSPECTION - inspection.START_INSPECTION );
+                                        total_time += hasil;
+                                    }
+                                }
+                                var queryTrack = await InspectionTrackingModel.aggregate( [
+                                    {
+                                        "$sort": {
+                                            "INSERT_TIME": -1
+                                        }
+                                    },
+                                    {
+                                        "$match": {
+                                            "INSERT_USER": authCode
+                                        }
+                                    },
+                                    {
+                                        "$project": {
+                                            "_id": 0,
+                                            "TRACK_INSPECTION_CODE": 1,
+                                            "BLOCK_INSPECTION_CODE": 1,
+                                            "DATE_TRACK": 1,
+                                            "LAT_TRACK": 1,
+                                            "LONG_TRACK": 1
+                                        }
+                                    }
+                                ] );
+                                var total_meter_distance = 0;
+                    
+                                if ( queryTrack.length > 0 ) {
+        
+                                    for ( var k = 0; k <= ( queryTrack.length - 1 ); k++ ) {
+                                        if ( k < ( queryTrack.length - 1 ) ) {
+                                            var l = k + 1;
+                                            // var hitung_jarak = this.compute_distance( track_1.LAT_TRACK, track_1.LONG_TRACK, track_2.LAT_TRACK, track_2.LONG_TRACK );
+                                            let lat2 = queryTrack[l].LAT_TRACK;
+                                            let lon2 = queryTrack[l].LONG_TRACK;
+                                            let lat1 = queryTrack[k].LAT_TRACK;
+                                            let lon1 = queryTrack[k].LONG_TRACK;
+                                            var R = 6371; // Lingkar Bumi (KM)
+                                            var dLat = ( lat2 - lat1 ) * Math.PI / 180;
+                                            var dLon = ( lon2 - lon1 ) * Math.PI / 180;
+                                            var a = Math.sin( dLat/2 ) * Math.sin( dLat/2 ) +
+                                                Math.cos( lat1 * Math.PI / 180 ) * Math.cos( lat2 * Math.PI / 180 ) *
+                                                Math.sin( dLon / 2 ) * Math.sin(dLon/2);
+                                            var c = 2 * Math.atan2( Math.sqrt( a ), Math.sqrt( 1 - a ) );
+                                            var d = R * c;
+                                            
+                                            total_meter_distance += Math.round( d * 1000 );
+                                        }
+                                    }
+                                }
+                                
+                                var query_total_inspeksi = await InspectionHModel.aggregate( [
+                                    {	
+                                        $group: {
+                                            "_id": {
+                                                "WERKS": "$WERKS",
+                                                "AFD_CODE": "$AFD_CODE",
+                                                "BLOCK_CODE": "$BLOCK_CODE",
+                                                "INSERT_USER": "$INSERT_USER",
+                                                "INSPECTION_DATE": {
+                                                    "$toInt": {
+                                                        "$substr": [
+                                                            {
+                                                                "$toLong": "$INSPECTION_DATE"
+                                                            },
+                                                            0,
+                                                            8
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "COUNT": {
+                                                "$sum": 1
+                                            },
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "_id": 0,
+                                            "WERKS": "$_id.WERKS",
+                                            "AFD_CODE": "$_id.AFD_CODE",
+                                            "BLOCK_CODE": "$_id.BLOCK_CODE",
+                                            "INSPECTION_DATE": "$_id.INSPECTION_DATE",
+                                            "INSERT_USER": "$_id.INSERT_USER",
+                                            "COUNT": "$COUNT"
+                                        }
+                                    },
+                                    {
+                                        $match: {
+                                            "INSPECTION_DATE": {
+                                                "$gte": parseInt( date_min_1_week.toString().substr( 0, 8 ) ),
+                                                "$lte": parseInt( date_now.toString().substr( 0, 8 ) )
+                                            },
+                                            "INSERT_USER": authCode
+                                        }
+                                    }
+                                ]);
+                                var total_baris = 0;
+                                if ( query_total_inspeksi.length > 0 ) {
+                                    for ( let index = 0; index < query_total_inspeksi.length; index++ ) {
+                                        total_baris += query_total_inspeksi[index].COUNT;
+                                    }
+                                }
+                                let stringLocationCode = dt.LOCATION_CODE.toString();
+                                var location_code = stringLocationCode.split( ',' );
+                                if ( location_code.length > 0 ) {
+                                    if ( dt.USER_ROLE == 'ASISTEN_LAPANGAN' ) {
+                                        var ba_code = location_code[0].substr( 0, 4 );
+                                        var url_ldap = url.time_daily + '/' + ba_code;
+                                        var args_ldap = {
+                                            headers: { 
+                                                "Content-Type": "application/json" 
+                                            }
+                                        };
+                                        
+                                        ( new NodeRestClient() ).get( url_ldap, args_ldap, function ( time_data, time_response ) {
+                                            var target_inspeksi = parseInt( time_data.data.results.jumlah_hari ) * 2;
+                                            var set = new SummaryWeeklyModel( {
+                                                "DURASI": total_time,
+                                                "JARAK": parseInt( total_meter_distance / 1000 ) ,
+                                                "TOTAL_INSPEKSI": query_total_inspeksi.length, 
+                                                "TOTAL_BARIS": total_baris,
+                                                "TARGET_INSPEKSI": target_inspeksi,
+                                                "SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
+                                                "IS_VIEW": 0,
+                                                "INSERT_USER": dt.USER_AUTH_CODE, 
+                                                "INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
+                                            } );
+                                            set.save();
+                                        } );
+                                    }
+                                    else if ( dt.USER_ROLE == 'KEPALA_KEBUN' ) {
+                                        var target_inspeksi = parseInt( 2 * location_code.length );
+                                        var set = new SummaryWeeklyModel( {
+                                            "DURASI": total_time,
+                                            "JARAK": parseInt( total_meter_distance / 1000 ) ,
+                                            // "JARAK": 1000 ,
+                                            "TOTAL_INSPEKSI": query_total_inspeksi.length, 
+                                            "TOTAL_BARIS": total_baris,
+                                            "TARGET_INSPEKSI": target_inspeksi,
+                                            "SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
+                                            "IS_VIEW": 0,
+                                            "INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
+                                            "INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
+                                        } );
+                                        set.save();
+                                    }
+                                    
+                                    else {
+                                        var set = new SummaryWeeklyModel( {
+                                            "DURASI": total_time,
+                                            "JARAK": parseInt( total_meter_distance / 1000 ),
+                                            "TOTAL_INSPEKSI": query_total_inspeksi.length, 
+                                            "TOTAL_BARIS": total_baris,
+                                            "TARGET_INSPEKSI": 0,
+                                            "SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
+                                            "IS_VIEW": 0,
+                                            "INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
+                                            "INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
+                                        } );
+                                        set.save();
+                                    }
+                                }         
+                            } else { 
+                                console.log( 'data summary dengan user authcode pada tanggal ini sudah ada' );
                             }
-                            else if ( dt.USER_ROLE == 'KEPALA_KEBUN' ) {
-                                var target_inspeksi = parseInt( 2 * location_code.length );
-                                var set = new SummaryWeeklyModel( {
-                                    "DURASI": total_time,
-                                    "JARAK": parseInt( total_meter_distance / 1000 ) ,
-                                    // "JARAK": 1000 ,
-                                    "TOTAL_INSPEKSI": query_total_inspeksi.length, 
-                                    "TOTAL_BARIS": total_baris,
-                                    "TARGET_INSPEKSI": target_inspeksi,
-                                    "SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
-                                    "IS_VIEW": 0,
-                                    "INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
-                                    "INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
-                                } );
-                                set.save();
-                            }
-                            
-                            else {
-                                var set = new SummaryWeeklyModel( {
-                                    "DURASI": total_time,
-                                    "JARAK": parseInt( total_meter_distance / 1000 ),
-                                    "TOTAL_INSPEKSI": query_total_inspeksi.length, 
-                                    "TOTAL_BARIS": total_baris,
-                                    "TARGET_INSPEKSI": 0,
-                                    "SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
-                                    "IS_VIEW": 0,
-                                    "INSERT_USER": dt.USER_AUTH_CODE, // Hardcode
-                                    "INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
-                                } );
-                                set.save();
-                            }
-                        }
+                        } )
+                       
                     } );
                 }
             } );
