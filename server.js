@@ -81,7 +81,11 @@
 		console.log( "\tPort \t\t: " + config.app.port[config.app.env] );
 	} );
 
-	//scheduling job_update_transaksi_complete() with cron
+	/*
+	|--------------------------------------------------------------------------
+	| Cron Scheduling
+	|--------------------------------------------------------------------------
+	*/
 	NodeCron.schedule( '5 0 * * MON', async () => {
 		let claims = {
 			USERNAME: "sentot.santosa",
@@ -92,6 +96,66 @@
 		Kernel.job_update_transaksi_complete( token );
 		console.log( 'running cron...' );
 	} );
+	/*
+	|--------------------------------------------------------------------------
+	| Kafka Consumer
+	|--------------------------------------------------------------------------
+	*/
+	// const kafka = require( 'kafka-node' );
+	// const Consumer = kafka.Consumer;
+	// const Offset = kafka.Offset;
+	// const Client = kafka.KafkaClient;
+	// const topic = 'INS_EMPLOYEE';
+	// const TAPSuggestionInspection = require( _directory_base + '/app/v1.1/Http/Models/TAPSuggestionInspectionModel.js' );
+
+	// const client = new Client( { kafkaHost: config.app.kafka[config.app.env].server_host } );
+	// const topics = [
+	// 	{ topic: topic, partition: 0 }
+	// ];
+	// const options = { 
+	// 	autoCommit: false, 
+	// 	fetchMaxWaitMs: 1000, 
+	// 	fetchMaxBytes: 1024 * 1024 
+	// };
+
+	// const consumer = new Consumer(client, topics, options);
+	// const offset = new Offset(client);
+
+	// consumer.on( 'message', function( message ) {
+	// 	if( message ) {
+	// 		let data = JSON.parse( message.value );
+	// 		if( data ) {
+	// 			let set = new TAPSuggestionInspection ( {
+	// 				NAME: data.NM,
+	// 				ADDRESS: data.ADRS,
+	// 				ROLE: data.RL
+	// 			} );
+				
+	// 			set.save()
+	// 			.then( () => {
+	// 				console.log( 'save success!' );
+	// 			} )
+	// 			.catch( err => {
+	// 				console.log( err.message );
+	// 			} );
+	// 		}
+	// 	}
+	// } );
+
+	// consumer.on( 'error', function( err ) {
+	// 	console.log( 'error', err );
+	// } );
+
+	// consumer.on( 'offsetOutOfRange', function( topic ) {
+	// 	topic.maxNum = 2;
+	// 	offset.fetch([topic], function( err, offsets ) {
+	// 		if( err ) {
+	// 			return console.error( err );
+	// 		}
+	// 		var min = Math.min.apply( null, offsets[topic.topic][topic.partition] );
+	// 		consumer.setOffset( topic.topic, topic.partition, min );
+	// 	});
+	// });
 
 	// Routing
 	require( './routes/api.js' )( App );

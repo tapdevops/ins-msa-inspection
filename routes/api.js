@@ -142,8 +142,9 @@
 			 app.get( '/api/v1.1/export-kafka/inspection-genba', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportKafkaController.export_inspection_genba );
 			 app.get( '/api/v1.1/export-kafka/inspection-tracking', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportKafkaController.export_inspection_tracking );
 			 
-		 /*
-
+			 // GET Inspection Header, Detail, Genba, Track By Month
+			 app.get( '/api/v1.1/inspection-month/:month', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportKafkaController.find_by_month );	 
+		/*
 		/*
 		 |--------------------------------------------------------------------------
 		 | Versi 1.0
