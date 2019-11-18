@@ -48,7 +48,7 @@
 		.then( data => {
 			if ( !data ) {
 				return res.send( {
-					status: false,
+					status: true,
 					message: config.app.error_message.create_404,
 					data: {}
 				} );
@@ -78,7 +78,7 @@
 		} ).catch( err => {
 			console.log(err)
 			return res.send( {
-				status: false,
+				status: true,
 				message: config.app.error_message.create_500,
 				data: {}
 			} );

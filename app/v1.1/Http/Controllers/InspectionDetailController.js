@@ -58,7 +58,7 @@
 				.then( data => {
 					if ( !data ) {
 						return res.send( {
-							status: false,
+							status: true,
 							message: config.app.error_message.create_404,
 							data: {}
 						} );
@@ -94,7 +94,7 @@
 					.then( data_log => {
 						if ( !data_log ) {
 							return res.send( {
-								status: false,
+								status: true,
 								message: config.app.error_message.create_404 + ' - Log',
 								data: {}
 							} );
@@ -106,14 +106,14 @@
 						} );
 					} ).catch( err => {
 						res.send( {
-							status: false,
+							status: true,
 							message: config.app.error_message.create_500 + ' - 2',
 							data: {}
 						} );
 					} );
 				} ).catch( err => {
 					res.status( 500 ).send( {
-						status: false,
+						status: true,
 						message: config.app.error_message.create_500 + ' - 2',
 						data: {}
 					} );

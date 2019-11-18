@@ -30,7 +30,7 @@
  	exports.create = async ( req, res ) => {
  		if ( !req.body.BLOCK_INSPECTION_CODE ) {
  			return res.status( 200 ).json( {
- 				status: false,
+ 				status: true,
 	 			message: "BLOCK_INSPECTION_CODE tidak valid.",
 	 			data: []
 	 		} );
@@ -38,7 +38,7 @@
 
  		if ( !req.body.GENBA_USER ) {
  			return res.status( 200 ).json( {
- 				status: false,
+ 				status: true,
 	 			message: "GENBA_USER tidak valid.",
 	 			data: []
 	 		} );
@@ -46,7 +46,7 @@
 
  		if ( req.body.GENBA_USER.length < 1 ) {
  			return res.status( 200 ).json( {
- 				status: false,
+ 				status: true,
 	 			message: "GENBA_USER kosong.",
 	 			data: []
 	 		} );
@@ -83,7 +83,7 @@
  			}
  			else {
  				return res.send( {
-					status: false,
+					status: true,
 					message: config.app.error_message.create_404 + ' - Log',
 					data: {}
 				} );
@@ -91,7 +91,7 @@
  		}
  		else {
  			return res.status( 200 ).json( {
- 				status: false,
+ 				status: true,
 	 			message: "BLOCK_INSPECTION_CODE tidak ditemukan.",
 	 			data: []
 	 		} );
