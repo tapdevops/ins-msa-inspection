@@ -34,7 +34,7 @@
 		var check_inspeksi = await InspectionHModel.findOne( { "BLOCK_INSPECTION_CODE": req.body.BLOCK_INSPECTION_CODE } ).count();
 		if ( check_inspeksi > 0 ) {
 			return res.send( {
-				status: false,
+				status: true,
 				message: 'Block Inspection Code ' + req.body.BLOCK_INSPECTION_CODE + ' sudah digunakan.',
 				data: {}
 			} );
