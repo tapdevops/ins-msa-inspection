@@ -100,10 +100,21 @@
 			} );
 			set.save()
 			.then( data_summary => {
+				let result = {
+					jarak_meter: 0,
+					durasi_menit: 0,
+					durasi_jam: 0,
+					total_inspeksi: 0,
+					total_baris: 0,
+					target_inspeksi: 0,
+					summary_date: data_summary.SUMMARY_DATE,
+					insert_user: data_summary.INSERT_USER,
+					insert_time: data_summary.INSERT_TIME
+				}
 				return res.json( {
 					"status": true ,
 					"message": "OK",
-					"data": data_summary
+					"data": result
 				} );
 			} )
 			.catch( error => {
