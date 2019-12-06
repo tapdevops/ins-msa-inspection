@@ -39,7 +39,30 @@
 				data: {}
 			} );
 		}
-
+		if ( !req.body.START_INSPECTION || !req.body.END_INSPECTION ) {
+			// Insert Block Inspection H Log
+			const set_log = new InspectionHLogModel( {
+				BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE,
+				PROSES: 'INSERT',
+				IMEI: auth.IMEI,
+				SYNC_TIME: new Date().getTime(),
+				INSERT_USER: req.body.INSERT_USER,
+				INSERT_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
+				MESSAGE: 'START_INSPECTION ATAU END_INSPECTION KOSONG'
+			} );
+			set_log.save()
+			return res.send( {
+				status: false,
+				message: 'START_INSPECTION ATAU END_INSPECTION KOSONG',
+				data: []
+			} );
+		}
+		if ( !req.body.INSERT_TIME ){
+			req.body.INSERT_TIME = 'now';
+		}
+		if ( !req.body.INSPECTION_DATE ) {
+			req.body.INSPECTION_DATE = req.body.START_INSPECTION;
+		}
 		const set_data = new InspectionHModel( {
 			BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE,
 			WERKS: req.body.WERKS,
@@ -51,7 +74,7 @@
 			INSPECTION_SCORE: parseFloat( req.body.INSPECTION_SCORE ) || 0,
 			INSPECTION_RESULT: req.body.INSPECTION_RESULT,
 			STATUS_SYNC: req.body.STATUS_SYNC,
-			SYNC_TIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
+			SYNC_TIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
 			START_INSPECTION: HelperLib.date_format( req.body.START_INSPECTION, 'YYYYMMDDhhmmss' ),
 			END_INSPECTION: HelperLib.date_format( req.body.END_INSPECTION, 'YYYYMMDDhhmmss' ),
 			LAT_START_INSPECTION: req.body.LAT_START_INSPECTION,
@@ -87,7 +110,7 @@
 					INSSC: parseFloat( req.body.INSPECTION_SCORE ) || 0,
 					INSRS: req.body.INSPECTION_RESULT,
 					SSYNC: req.body.STATUS_SYNC,
-					STIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
+					STIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
 					STINS: HelperLib.date_format( req.body.START_INSPECTION, 'YYYYMMDDhhmmss' ),
 					EDINS: HelperLib.date_format( req.body.END_INSPECTION, 'YYYYMMDDhhmmss' ),
 					LATSI: req.body.LAT_START_INSPECTION,
@@ -111,7 +134,7 @@
 				IMEI: auth.IMEI,
 				SYNC_TIME: new Date().getTime(),
 				INSERT_USER: req.body.INSERT_USER,
-				INSERT_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
+				INSERT_TIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
 			} );
 
 			set_log.save()

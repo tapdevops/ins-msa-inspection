@@ -28,6 +28,9 @@
 	  * --------------------------------------------------------------------
 	*/
  	exports.create = ( req, res ) => {
+		if ( !req.body.INSERT_TIME ) {
+			req.body.INSERT_TIME = 'now';
+		}
 		InspectionDModel.findOne( {
 			BLOCK_INSPECTION_CODE_D: req.body.BLOCK_INSPECTION_CODE_D
 		} )
@@ -46,7 +49,7 @@
 					CONTENT_INSPECTION_CODE: req.body.CONTENT_INSPECTION_CODE,
 					VALUE: req.body.VALUE,
 					STATUS_SYNC: req.body.STATUS_SYNC,
-					SYNC_TIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
+					SYNC_TIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
 					INSERT_USER: req.body.INSERT_USER,
 					INSERT_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
 					UPDATE_USER: req.body.INSERT_USER,
