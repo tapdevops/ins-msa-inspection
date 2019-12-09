@@ -73,7 +73,7 @@
 							CTINC: req.body.CONTENT_INSPECTION_CODE,
 							VALUE: req.body.VALUE,
 							SSYNC: req.body.STATUS_SYNC,
-							STIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
+							STIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
 							INSUR: req.body.INSERT_USER,
 							INSTM: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
 							UPTUR: "",
@@ -88,7 +88,7 @@
 						BLOCK_INSPECTION_CODE_D: req.body.BLOCK_INSPECTION_CODE_D,
 						PROSES: 'INSERT',
 						IMEI: auth.IMEI,
-						SYNC_TIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
+						SYNC_TIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
 						INSERT_USER: req.body.INSERT_USER,
 						INSERT_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
 					} );

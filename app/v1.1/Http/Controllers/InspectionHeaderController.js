@@ -30,7 +30,7 @@
 	exports.create = async ( req, res ) => {
 		var auth = req.auth;
 
-		// Check Block Inspection Code, jika sudah ada maka returnnya false.
+		// Check Block Inspection Code, jika sudah ada maka returnnya true.
 		var check_inspeksi = await InspectionHModel.findOne( { "BLOCK_INSPECTION_CODE": req.body.BLOCK_INSPECTION_CODE } ).count();
 		if ( check_inspeksi > 0 ) {
 			return res.send( {
@@ -43,14 +43,15 @@
 			// Insert Block Inspection H Log
 			const set_log = new InspectionHLogModel( {
 				BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE,
+				PARAMETER: req.body,
 				PROSES: 'INSERT',
 				IMEI: auth.IMEI,
 				SYNC_TIME: new Date().getTime(),
 				INSERT_USER: req.body.INSERT_USER,
-				INSERT_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
+				INSERT_TIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
 				MESSAGE: 'START_INSPECTION ATAU END_INSPECTION KOSONG'
 			} );
-			set_log.save()
+			set_log.save();
 			return res.send( {
 				status: false,
 				message: 'START_INSPECTION ATAU END_INSPECTION KOSONG',
@@ -130,6 +131,7 @@
 			// Insert Block Inspection H Log
 			const set_log = new InspectionHLogModel( {
 				BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE,
+				PARAMETER: req.body,
 				PROSES: 'INSERT',
 				IMEI: auth.IMEI,
 				SYNC_TIME: new Date().getTime(),
