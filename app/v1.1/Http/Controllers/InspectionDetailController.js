@@ -53,7 +53,7 @@
 					INSERT_USER: req.body.INSERT_USER,
 					INSERT_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
 					UPDATE_USER: req.body.INSERT_USER,
-					UPDATE_TIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
+					UPDATE_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
 					DELETE_USER: "",
 					DELETE_TIME: 0
 				} );
