@@ -8,6 +8,7 @@
 		"body-parser": "^1.16.0",
 		"compression": "^1.6.2",
 		"connect-timeout": "^1.9.0",
+		"cron": "^1.7.2",
 		"date-and-time": "^0.6.3",
 		"dateformat": "^3.0.3",
 		"express": "^4.14.1",

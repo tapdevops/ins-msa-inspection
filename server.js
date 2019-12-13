@@ -18,7 +18,7 @@
 	const Express = require( 'express' );
 	const Mongoose = require( 'mongoose' );
 	const timeout = require( 'connect-timeout' );
-	const NodeCron = require( 'node-cron' );
+	const CronJob = require( 'cron' ).CronJob;
 
 	//Kernel Model
 	const Kernel = require( _directory_base + '/app/v1.1/Console/Kernel.js' );
@@ -86,7 +86,7 @@
 	| Cron Scheduling
 	|--------------------------------------------------------------------------
 	*/
-	NodeCron.schedule( '5 0 * * MON', async () => {
+	new CronJob( '5 0 * * MON', function () {
 		let claims = {
 			USERNAME: "sentot.santosa",
 			USER_AUTH_CODE: "TAC00011",
@@ -95,7 +95,7 @@
 		var token = Security.generate_token( claims ); // Generate Token
 		Kernel.job_update_transaksi_complete( token );
 		console.log( 'running cron...' );
-	} );
+	}, null, true, 'Asia/Jakarta' );
 	/*
 	|--------------------------------------------------------------------------
 	| Kafka Consumer
