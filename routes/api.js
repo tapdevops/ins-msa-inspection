@@ -8,6 +8,16 @@ const RoutesVersioning = require('express-routes-versioning')();
 
 // Controllers
 const Controllers = {
+	v_2_0: {
+		ExportController: require(_directory_base + '/app/v2.0/Http/Controllers/ExportController.js'),
+		ExportKafkaController: require(_directory_base + '/app/v2.0/Http/Controllers/ExportKafkaController.js'),
+		InspectionDetailController: require(_directory_base + '/app/v2.0/Http/Controllers/InspectionDetailController.js'),
+		InspectionGenbaController: require(_directory_base + '/app/v2.0/Http/Controllers/InspectionGenbaController.js'),
+		InspectionHeaderController: require(_directory_base + '/app/v2.0/Http/Controllers/InspectionHeaderController.js'),
+		InspectionTrackingController: require(_directory_base + '/app/v2.0/Http/Controllers/InspectionTrackingController.js'),
+		InspectionReportController: require(_directory_base + '/app/v2.0/Http/Controllers/InspectionReportController.js'),
+		SummaryController: require(_directory_base + '/app/v2.0/Http/Controllers/SummaryController.js'),
+	},
 	v_1_2: {
 		ExportController: require(_directory_base + '/app/v1.2/Http/Controllers/ExportController.js'),
 		ExportKafkaController: require(_directory_base + '/app/v1.2/Http/Controllers/ExportKafkaController.js'),
@@ -41,6 +51,9 @@ const Controllers = {
 
 // Middleware
 const Middleware = {
+	v_2_0: {
+		VerifyToken: require(_directory_base + '/app/v2.0/Http/Middleware/VerifyToken.js')
+	},
 	v_1_2: {
 		VerifyToken: require(_directory_base + '/app/v1.2/Http/Middleware/VerifyToken.js')
 	},
@@ -73,6 +86,46 @@ module.exports = (app) => {
 			}
 		})
 	});
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Versi 2.0
+	 |--------------------------------------------------------------------------
+	 */
+	// Inspection Detail
+	app.get('/api/v2.0/detail/:id', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.InspectionDetailController.find_one);
+	app.post('/api/v2.0/detail', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.InspectionDetailController.create);
+
+	// Inspection Header
+	app.post('/api/v2.0/genba', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.InspectionGenbaController.create);
+
+	// Inspection Header
+	app.get('/api/v2.0/find', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.InspectionHeaderController.find);
+	app.post('/api/v2.0/header', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.InspectionHeaderController.create);
+	app.get('/api/v2.0/header/:id', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.InspectionHeaderController.find_one);
+
+	// Inspection Tracking
+	app.post('/api/v2.0/tracking', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.InspectionTrackingController.create);
+
+	// Inspection Report
+	app.get('/api/v2.0/report', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.InspectionReportController.find);
+
+	// Summary
+	app.post('/api/v2.0/summary', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.SummaryController.inspeksi);
+	app.get('/api/v2.0/summary/generate', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.SummaryController.process_weekly);
+
+	// Export
+	app.get('/api/v2.0/export/premi/:first_date/:end_date', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.ExportController.premi);
+	app.get('/api/v2.0/export/tap-dw/tr-inspection/:first_date/:end_date', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.ExportController.tap_dw_tr_inspection);
+
+	//Export-Kafka
+	app.get('/api/v2.0/export-kafka/inspection-detail', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.ExportKafkaController.export_inspection_detail);
+	app.get('/api/v2.0/export-kafka/inspection-header', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.ExportKafkaController.export_inspection_header);
+	app.get('/api/v2.0/export-kafka/inspection-genba', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.ExportKafkaController.export_inspection_genba);
+	app.get('/api/v2.0/export-kafka/inspection-tracking', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.ExportKafkaController.export_inspection_tracking);
+
+	// GET Inspection Header, Detail, Genba, Track By Month
+	app.get('/api/v2.0/inspection-month/:month', Middleware.v_2_0.VerifyToken, Controllers.v_2_0.ExportKafkaController.find_by_month);
 
 	/*
 	 |--------------------------------------------------------------------------
