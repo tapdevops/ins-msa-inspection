@@ -27,7 +27,7 @@
 	  * --------------------------------------------------------------------
 	*/
 	exports.inspeksi = async ( req, res ) => {
-		var query_summary_weekly = await SummaryWeeklyModel.aggregate( [
+		let query_summary_weekly = await SummaryWeeklyModel.aggregate( [
 			{
 				"$match": {
 					"INSERT_USER": req.auth.USER_AUTH_CODE 
@@ -41,25 +41,13 @@
 			{
 				$limit: 1
 			}
-		]);
-		var result = {
-			jarak_meter: 0,
-			durasi_menit: 0 ,
-			durasi_jam: 0,
-			total_inspeksi: 0,
-			total_baris: 0,
-			target_inspeksi: 0,
-			summary_date: 0,
-			insert_user: "",
-			insert_time: 0
-		}
-
+		] );
+		
 		if ( query_summary_weekly.length > 0 ) {
-			var summary = query_summary_weekly[0]
-			var jam = parseInt( summary.DURASI / 3600 );
-			var menit = parseInt( summary.DURASI % 3600 / 60 );
-			
-			var result = {
+			let summary = query_summary_weekly[0]
+			let jam = parseInt( summary.DURASI / 3600 );
+			let menit = parseInt( summary.DURASI % 3600 / 60 );
+			let result = {
 				jarak_meter: summary.JARAK,
 				durasi_menit: menit ,
 				durasi_jam: jam >= 1 ? jam : 0,
@@ -70,36 +58,73 @@
 				insert_user: summary.INSERT_USER,
 				insert_time: summary.INSERT_TIME
 			}
-		}
-
-		if( req.body.IS_VIEW ){
-			if ( req.body.IS_VIEW == 1 ) {
-				SummaryWeeklyModel.findOneAndUpdate( 
-					{
-						INSERT_USER: req.auth.USER_AUTH_CODE,
-						IS_VIEW : 0	
-					}, 
-					{
-						IS_VIEW: 1
-					}, 
-					{ new: true } 
-				).then( data => {
+			
+			SummaryWeeklyModel.findOneAndUpdate( 
+				{
+					INSERT_USER: req.auth.USER_AUTH_CODE,
+					IS_VIEW : 0	
+				}, 
+				{
+					IS_VIEW: 1
+				}, 
+				{ new: true } 
+			).then( data_summary => {
+				if( data_summary ) {
 					return res.json( {
-						"status": ( summary.IS_VIEW == 0 ? true : false ),
+						"status": true,
 						"message": "OK",
 						"data": result
-					} );
+					} );	
+				}
+				return res.json( {
+					"status": true,//( data_summary.IS_VIEW == 0 ? true : false ),
+					"message": 'OK',
+					"data": result
 				} );
-			}
+			} )
 		}
-		else {
-			return res.json( {
-				"status": false,
-				"message": "Error! Variabel IS_VIEW kosong",
-				"data": []
+		else { 
+			let date_now = new Date();
+				date_now = parseInt( MomentTimezone( date_now ).tz( "Asia/Jakarta" ).format( "YYYYMMDD" ) + '235959' );
+			console.log( parseInt( date_now.toString().substr( 0, 8 ) ) );
+			let set = new SummaryWeeklyModel( {
+				"DURASI": 0,
+				"JARAK": 0 ,
+				"TOTAL_INSPEKSI": 0, 
+				"TOTAL_BARIS": 0,
+				"TARGET_INSPEKSI": 0,
+				"SUMMARY_DATE": parseInt( date_now.toString().substr( 0, 8 ) ),
+				"IS_VIEW": 1,
+				"INSERT_USER": req.auth.USER_AUTH_CODE, 
+				"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 			} );
+			set.save()
+			.then( data_summary => {
+				let result = {
+					jarak_meter: 0,
+					durasi_menit: 0,
+					durasi_jam: 0,
+					total_inspeksi: 0,
+					total_baris: 0,
+					target_inspeksi: 0,
+					summary_date: data_summary.SUMMARY_DATE,
+					insert_user: data_summary.INSERT_USER,
+					insert_time: data_summary.INSERT_TIME
+				}
+				return res.json( {
+					"status": true ,
+					"message": "OK",
+					"data": result
+				} );
+			} )
+			.catch( error => {
+				return res.json( {
+					status: false,
+					message: error.message,
+					data: []
+				} )
+			} )
 		}
-		
 	}
 
  	/** 
@@ -129,7 +154,7 @@
  	exports.process_weekly = async ( req, res ) => {
 
  		var url = {
- 			user_data: config.app.url[config.app.env].microservice_auth + '/api/v1.1/user/data',
+ 			user_data: config.app.url[config.app.env].microservice_auth + '/api/v1.2/user/data',
  			time_daily: config.app.url[config.app.env].ldap_2 + '/dw/time-daily/get-active-date-min-7'
  		};
 		var args = {
@@ -260,7 +285,6 @@
 							}
 						}
 					]);
-					
 					var total_baris = 0;
 					if ( query_total_inspeksi.length > 0 ) {
 						for ( index in query_total_inspeksi ) {
@@ -285,7 +309,6 @@
 							
 							( new NodeRestClient() ).get( url_ldap, args_ldap, function ( time_data, time_response ) {
 								var target_inspeksi = parseInt( time_data.data.results.jumlah_hari ) * 2;
-								
 								var set = new SummaryWeeklyModel( {
 									"DURASI": total_time,
 									"JARAK": parseInt( total_meter_distance / 1000 ) ,
@@ -297,6 +320,9 @@
 									"INSERT_USER": dt.USER_AUTH_CODE, 
 									"INSERT_TIME": Helper.date_format( 'now', 'YYYYMMDDhhmmss' )
 								} );
+								if( dt.USER_AUTH_CODE == '0126'){
+									console.log( set );
+								}
 								set.save();
 							} );
 						}

@@ -17,14 +17,11 @@
  	/** 
  	  * Find
 	  * Untuk mengambil seluruh data atau dengan parameter tertentu, contohnya :
-	  * URL.DOMAIN/v1.1/q?WERKS=4122
-	  * URL.DOMAIN/v1.1/q?WERKS=4122&BLOCK_CODE=001
+	  * URL.DOMAIN/v1.2/q?WERKS=4122
+	  * URL.DOMAIN/v1.2/q?WERKS=4122&BLOCK_CODE=001
 	  * --------------------------------------------------------------------
 	*/
  	exports.find = async ( req, res ) => {
-
- 		console.log("XXX");
-
  		var url_query = req.query;
 		var url_query_length = Object.keys( url_query ).length;
 		var query = {};

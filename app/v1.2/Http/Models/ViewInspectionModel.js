@@ -3,18 +3,18 @@
  | Variable
  |--------------------------------------------------------------------------
  */
-	const mongoose = require( 'mongoose' );
+const mongoose = require('mongoose');
 
 /*
  |--------------------------------------------------------------------------
  | Schema
  |--------------------------------------------------------------------------
  */
-	const ViewInspectionSchema = mongoose.Schema( {});
+const ViewInspectionSchema = mongoose.Schema({});
 
 /*
 |--------------------------------------------------------------------------
 | Module Exports
 |--------------------------------------------------------------------------
 */
-	module.exports = mongoose.model( 'ViewInspection_v_1_2', ViewInspectionSchema, 'VIEW_INSPECTION' );
+module.exports = mongoose.model('ViewInspection_v_1_2', ViewInspectionSchema, 'VIEW_INSPECTION');
