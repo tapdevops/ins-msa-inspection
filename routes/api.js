@@ -80,39 +80,39 @@ module.exports = (app) => {
 	 |--------------------------------------------------------------------------
 	 */
 	// Inspection Detail
-	app.get('/api/v1.2/detail/:id', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionDetailController.find_one);
-	app.post('/api/v1.2/detail', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionDetailController.create);
+	app.get('/api/v1.2/detail/:id', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.InspectionDetailController.find_one);
+	app.post('/api/v1.2/detail', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.InspectionDetailController.create);
 
 	// Inspection Header
-	app.post('/api/v1.2/genba', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionGenbaController.create);
+	app.post('/api/v1.2/genba', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.InspectionGenbaController.create);
 
 	// Inspection Header
-	app.get('/api/v1.2/find', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionHeaderController.find);
-	app.post('/api/v1.2/header', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionHeaderController.create);
-	app.get('/api/v1.2/header/:id', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionHeaderController.find_one);
+	app.get('/api/v1.2/find', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.InspectionHeaderController.find);
+	app.post('/api/v1.2/header', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.InspectionHeaderController.create);
+	app.get('/api/v1.2/header/:id', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.InspectionHeaderController.find_one);
 
 	// Inspection Tracking
-	app.post('/api/v1.2/tracking', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionTrackingController.create);
+	app.post('/api/v1.2/tracking', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.InspectionTrackingController.create);
 
 	// Inspection Report
-	app.get('/api/v1.2/report', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.InspectionReportController.find);
+	app.get('/api/v1.2/report', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.InspectionReportController.find);
 
 	// Summary
-	app.post('/api/v1.2/summary', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.SummaryController.inspeksi);
-	app.get('/api/v1.2/summary/generate', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.SummaryController.process_weekly);
+	app.post('/api/v1.2/summary', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.SummaryController.inspeksi);
+	app.get('/api/v1.2/summary/generate', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.SummaryController.process_weekly);
 
 	// Export
-	app.get('/api/v1.2/export/premi/:first_date/:end_date', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportController.premi);
-	app.get('/api/v1.2/export/tap-dw/tr-inspection/:first_date/:end_date', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportController.tap_dw_tr_inspection);
+	app.get('/api/v1.2/export/premi/:first_date/:end_date', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.ExportController.premi);
+	app.get('/api/v1.2/export/tap-dw/tr-inspection/:first_date/:end_date', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.ExportController.tap_dw_tr_inspection);
 
 	//Export-Kafka
-	app.get('/api/v1.2/export-kafka/inspection-detail', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportKafkaController.export_inspection_detail);
-	app.get('/api/v1.2/export-kafka/inspection-header', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportKafkaController.export_inspection_header);
-	app.get('/api/v1.2/export-kafka/inspection-genba', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportKafkaController.export_inspection_genba);
-	app.get('/api/v1.2/export-kafka/inspection-tracking', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportKafkaController.export_inspection_tracking);
+	app.get('/api/v1.2/export-kafka/inspection-detail', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.ExportKafkaController.export_inspection_detail);
+	app.get('/api/v1.2/export-kafka/inspection-header', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.ExportKafkaController.export_inspection_header);
+	app.get('/api/v1.2/export-kafka/inspection-genba', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.ExportKafkaController.export_inspection_genba);
+	app.get('/api/v1.2/export-kafka/inspection-tracking', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.ExportKafkaController.export_inspection_tracking);
 
 	// GET Inspection Header, Detail, Genba, Track By Month
-	app.get('/api/v1.2/inspection-month/:month', Middleware.v_1_1.VerifyToken, Controllers.v_1_1.ExportKafkaController.find_by_month);
+	app.get('/api/v1.2/inspection-month/:month', Middleware.v_1_2.VerifyToken, Controllers.v_1_2.ExportKafkaController.find_by_month);
 
 	/*
    /*
