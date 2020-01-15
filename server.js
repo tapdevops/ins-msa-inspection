@@ -21,13 +21,13 @@ const timeout = require('connect-timeout');
 const CronJob = require('cron').CronJob;
 
 //Kernel Model
-const Kernel = require(_directory_base + '/app/v1.2/Console/Kernel.js');
+const Kernel = require(_directory_base + '/app/v2.0/Console/Kernel.js');
 
 // Primary Variable
 const App = Express();
 
 //Library
-const Security = require(_directory_base + '/app/v1.2/Http/Libraries/Security.js');
+const Security = require(_directory_base + '/app/v2.0/Http/Libraries/Security.js');
 
 /*
 |--------------------------------------------------------------------------
