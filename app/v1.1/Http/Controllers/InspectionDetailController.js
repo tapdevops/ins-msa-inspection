@@ -28,6 +28,10 @@
 	  * --------------------------------------------------------------------
 	*/
  	exports.create = ( req, res ) => {
+
+		if ( !req.body.INSERT_TIME ) {
+			req.body.INSERT_TIME = 'now';
+		}
 		InspectionDModel.findOne( {
 			BLOCK_INSPECTION_CODE_D: req.body.BLOCK_INSPECTION_CODE_D
 		} )
@@ -46,11 +50,11 @@
 					CONTENT_INSPECTION_CODE: req.body.CONTENT_INSPECTION_CODE,
 					VALUE: req.body.VALUE,
 					STATUS_SYNC: req.body.STATUS_SYNC,
-					SYNC_TIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
+					SYNC_TIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
 					INSERT_USER: req.body.INSERT_USER,
 					INSERT_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
 					UPDATE_USER: req.body.INSERT_USER,
-					UPDATE_TIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
+					UPDATE_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
 					DELETE_USER: "",
 					DELETE_TIME: 0
 				} );
@@ -58,7 +62,7 @@
 				.then( data => {
 					if ( !data ) {
 						return res.send( {
-							status: true,
+							status: false,
 							message: config.app.error_message.create_404,
 							data: {}
 						} );
@@ -70,7 +74,7 @@
 							CTINC: req.body.CONTENT_INSPECTION_CODE,
 							VALUE: req.body.VALUE,
 							SSYNC: req.body.STATUS_SYNC,
-							STIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
+							STIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
 							INSUR: req.body.INSERT_USER,
 							INSTM: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
 							UPTUR: "",
@@ -85,7 +89,7 @@
 						BLOCK_INSPECTION_CODE_D: req.body.BLOCK_INSPECTION_CODE_D,
 						PROSES: 'INSERT',
 						IMEI: auth.IMEI,
-						SYNC_TIME: HelperLib.date_format( req.body.SYNC_TIME, 'YYYYMMDDhhmmss' ),
+						SYNC_TIME: HelperLib.date_format( 'now', 'YYYYMMDDhhmmss' ),
 						INSERT_USER: req.body.INSERT_USER,
 						INSERT_TIME: HelperLib.date_format( req.body.INSERT_TIME, 'YYYYMMDDhhmmss' ),
 					} );
@@ -94,7 +98,7 @@
 					.then( data_log => {
 						if ( !data_log ) {
 							return res.send( {
-								status: true,
+								status: false,
 								message: config.app.error_message.create_404 + ' - Log',
 								data: {}
 							} );
@@ -106,14 +110,14 @@
 						} );
 					} ).catch( err => {
 						res.send( {
-							status: true,
+							status: false,
 							message: config.app.error_message.create_500 + ' - 2',
 							data: {}
 						} );
 					} );
 				} ).catch( err => {
 					res.status( 500 ).send( {
-						status: true,
+						status: false,
 						message: config.app.error_message.create_500 + ' - 2',
 						data: {}
 					} );

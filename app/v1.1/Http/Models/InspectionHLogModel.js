@@ -12,6 +12,7 @@
  */
 	const InspectionLogSchema = mongoose.Schema( {
 		BLOCK_INSPECTION_CODE: String,
+		PARAMETER: Object,
 		PROSES: String,
 		IMEI: String,
 		SYNC_TIME: {
@@ -32,7 +33,8 @@
 			default: function() {
 				return 0;
 			}
-		}
+		},
+		MESSAGE: String
 	});
 
 /*

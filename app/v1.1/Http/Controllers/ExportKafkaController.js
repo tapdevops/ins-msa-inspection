@@ -227,7 +227,60 @@
         //     };
 		// 	KafkaServer.producer( 'INS_MSA_INS_TR_TRACK_INSPECTION', JSON.stringify( kafka_body ) );
         // } )
-        
+    }
+    exports.find_by_month = async ( req, res ) => {
+        let start = req.params.month;
+        if ( isNaN( parseInt( start ) ) || start.length !== 6 ) {
+            return res.send( {
+                status: false,
+                message: 'Periksa Param Bulan',
+                data: {}
+            } );
+        }
+        let end;
+        if ( start.substring( 4, 6 ) === '12' ) {
+            end = parseInt( start ) + 100;
+        } else {
+            end = parseInt( start ) + 1;
+        }
+        try {
+            const inspectionDetailCount = await Models.InspectionD.countDocuments( {
+                INSERT_TIME: {
+                    $gte: parseInt( start + '01000000' ),
+                    $lte: parseInt( end + '01000000' )
+                }
+            } );
+            const inspectionHeaderCount = await Models.InspectionH.countDocuments( {
+                INSERT_TIME: {
+                    $gte: parseInt( start + '01000000' ),
+                    $lte: parseInt( end + '01000000' )
+                }
+            } );
+            const inspectionTrackingCount = await Models.InspectionTracking.countDocuments( {
+                INSERT_TIME: {
+                    $gte: parseInt( start + '01000000' ),
+                    $lte: parseInt( end + '01000000' )
+                }
+            } );
+            const inspectionGenbaCount = await Models.InspectionGenba.countDocuments( {} );
+            
+            res.send( {
+                status: true,
+                message: 'Data dari ' + start + '01000000 sampai ' + end + '01000000',
+                data: {
+                    TR_BLOCK_INSPECTION_D: inspectionDetailCount,
+                    TR_BLOCK_INSPECTION_H: inspectionHeaderCount,
+                    TR_INSPECTION_GENBA: inspectionGenbaCount,
+                    TR_TRACK_INSPECTION: inspectionTrackingCount
+                }    
+            } );
+        } catch ( error ) {
+            res.send( {
+                status: false,
+                message: 'Internal Server Error: ' + error.message,
+                data: []
+            } );
+        }
     }
 
     

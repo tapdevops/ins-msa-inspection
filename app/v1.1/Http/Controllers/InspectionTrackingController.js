@@ -26,8 +26,19 @@
 	 * Untuk menyimpan data tracking baru
 	 * --------------------------------------------------------------------------
 	 */
-	exports.create = ( req, res ) => {
+	exports.create = async ( req, res ) => {
 		var auth = req.auth;
+		let count = await InspectionTrackingModel.findOne( {
+			TRACK_INSPECTION_CODE: req.body.TRACK_INSPECTION_CODE,
+			BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE
+		} ).count();
+		if ( count > 0 ) {
+			return res.send( {
+				status :true,
+				message: 'Skip save!',
+				data: []
+			} );
+		}
 		const set = new InspectionTrackingModel( {
 			TRACK_INSPECTION_CODE: req.body.TRACK_INSPECTION_CODE || "",
 			BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE || "",
@@ -48,7 +59,7 @@
 		.then( data => {
 			if ( !data ) {
 				return res.send( {
-					status: true,
+					status: false,
 					message: config.app.error_message.create_404,
 					data: {}
 				} );
@@ -78,7 +89,7 @@
 		} ).catch( err => {
 			console.log(err)
 			return res.send( {
-				status: true,
+				status: false,
 				message: config.app.error_message.create_500,
 				data: {}
 			} );

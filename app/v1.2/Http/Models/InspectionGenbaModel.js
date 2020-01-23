@@ -3,21 +3,21 @@
  | Variable
  |--------------------------------------------------------------------------
  */
-	const mongoose = require( 'mongoose' );
-	
+const mongoose = require('mongoose');
+
 /*
  |--------------------------------------------------------------------------
  | Schema
  |--------------------------------------------------------------------------
  */
-	const InspectionGenbaSchema = mongoose.Schema( {
-		BLOCK_INSPECTION_CODE: String,
-		GENBA_USER: String
-	});
+const InspectionGenbaSchema = mongoose.Schema({
+	BLOCK_INSPECTION_CODE: String,
+	GENBA_USER: String
+});
 
 /*
 |--------------------------------------------------------------------------
 | Module Exports
 |--------------------------------------------------------------------------
 */
-	module.exports = mongoose.model( 'InspectionGenba_v_1_2', InspectionGenbaSchema, 'TR_INSPECTION_GENBA' );
+module.exports = mongoose.model('InspectionGenba_v_1_2', InspectionGenbaSchema, 'TR_INSPECTION_GENBA');

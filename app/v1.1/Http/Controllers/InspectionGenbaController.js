@@ -50,7 +50,18 @@
 	 			message: "GENBA_USER kosong.",
 	 			data: []
 	 		} );
- 		}
+		}
+		let count = await InspectionGenbaModel.findOne( {
+			BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE,
+			GENBA_USER: req.body.GENBA_USER
+		} ).count();
+		if ( count > 0 ) {
+			return res.send( {
+				status: true,
+				message: 'Skip save!',
+				data: []
+			} );
+		}
 
  		var check_block_inspection_code = await InspectionHModel.findOne( {
  			BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE

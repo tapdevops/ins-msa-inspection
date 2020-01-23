@@ -14,7 +14,8 @@
 	const Validator = require( 'ferds-validator');
 
 	// Libraries
- 	const HelperLib = require( _directory_base + '/app/v1.2/Http/Libraries/HelperLib.js' );
+	const HelperLib = require( _directory_base + '/app/v1.2/Http/Libraries/HelperLib.js' );
+	const KafkaServer = require( _directory_base + '/app/v1.2/Http/Libraries/KafkaServer.js' );
 
 /*
  |--------------------------------------------------------------------------
@@ -27,7 +28,6 @@
 	  * --------------------------------------------------------------------
 	*/
  	exports.create = async ( req, res ) => {
-
  		if ( !req.body.BLOCK_INSPECTION_CODE ) {
  			return res.status( 200 ).json( {
  				status: false,
@@ -50,7 +50,18 @@
 	 			message: "GENBA_USER kosong.",
 	 			data: []
 	 		} );
- 		}
+		}
+		let count = await InspectionGenbaModel.findOne( {
+			BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE,
+			GENBA_USER: req.body.GENBA_USER
+		} ).count();
+		if ( count > 0 ) {
+			return res.send( {
+				status: true,
+				message: 'Skip save!',
+				data: []
+			} );
+		}
 
  		var check_block_inspection_code = await InspectionHModel.findOne( {
  			BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE
@@ -62,11 +73,19 @@
  				insert_array.push( {
  					BLOCK_INSPECTION_CODE: req.body.BLOCK_INSPECTION_CODE,
  					GENBA_USER: data
- 				} );
+				} );
+				
+				// Send Kafka Message
+				var kafka_body = {
+					BINCH: req.body.BLOCK_INSPECTION_CODE,
+					GNBUR: data
+				}
+				KafkaServer.producer( 'INS_MSA_INS_TR_INSPECTION_GENBA', JSON.stringify( kafka_body ) );	
  			} );
  			var insert_db = await InspectionGenbaModel.insertMany( insert_array );
 
  			if ( insert_db.length > 0 ) {
+				
  				return res.send( {
 					status: true,
 					message: config.app.error_message.create_200,

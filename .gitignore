@@ -1,4 +1,4 @@
-#Ignoring Dockerfile and config/app.js
+#Ignoring Dockerfile, config/app.js and nodu_modules
 
 Dockerfile
 config/app.js
