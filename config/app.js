@@ -60,7 +60,7 @@
 					microservice_finding: 'http://app.tap-agri.com/mobileinspectiondev/ins-msa-dev-finding',
 					microservice_hectare_statement: 'http://app.tap-agri.com/mobileinspectiondev/ins-msa-dev-hectarestatement',
 					microservice_inspection: 'http://app.tap-agri.com/mobileinspectiondev/ins-msa-dev-inspection',
-					microservice_images: 'http://149.129.250.199:3012',
+					microservice_images: 'http://149.129.250.199:4012',
 				},
 				qa: {
 					ldap: 'http://tap-ldapdev.tap-agri.com/login',
