@@ -78,7 +78,7 @@
 					DLTUR: "",
 					DLTTM: 0
 				};
-			   KafkaServer.producer( 'INS_MSA_INS_TR_TRACK_INSPECTION', JSON.stringify( kafka_body ) );
+			   //KafkaServer.producer( 'INS_MSA_INS_TR_TRACK_INSPECTION', JSON.stringify( kafka_body ) );
 			}
 			return res.send( {
 				status: true,

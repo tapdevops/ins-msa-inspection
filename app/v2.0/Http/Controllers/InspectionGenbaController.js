@@ -80,7 +80,7 @@
 					BINCH: req.body.BLOCK_INSPECTION_CODE,
 					GNBUR: data
 				}
-				// KafkaServer.producer( 'INS_MSA_INS_TR_INSPECTION_GENBA', JSON.stringify( kafka_body ) );	
+				//KafkaServer.producer( 'INS_MSA_INS_TR_INSPECTION_GENBA', JSON.stringify( kafka_body ) );	
  			} );
  			var insert_db = await InspectionGenbaModel.insertMany( insert_array );
 

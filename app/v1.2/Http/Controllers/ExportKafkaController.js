@@ -67,7 +67,7 @@
                 DLTUR: data.DELETE_USER,
                 DLTTM: data.DELETE_TIME	
             }
-            KafkaServer.producer( 'INS_MSA_INS_TR_BLOCK_INSPECTION_D', JSON.stringify( kafka_body ) );
+            //KafkaServer.producer( 'INS_MSA_INS_TR_BLOCK_INSPECTION_D', JSON.stringify( kafka_body ) );
         } );
         res.send( {
             message: true
@@ -122,7 +122,7 @@
                 DLTTM: data.DELETE_TIME	
             }
             console.log( ++i );
-            KafkaServer.producer( 'INS_MSA_INS_TR_BLOCK_INSPECTION_H', JSON.stringify( kafka_body ) );
+            //KafkaServer.producer( 'INS_MSA_INS_TR_BLOCK_INSPECTION_H', JSON.stringify( kafka_body ) );
         } );
         res.send( {
             message: true
@@ -144,7 +144,7 @@
                 BINCH: data.BLOCK_INSPECTION_CODE,
                 GNBUR: data.GENBA_USER
             }
-            KafkaServer.producer( 'INS_MSA_INS_TR_INSPECTION_GENBA', JSON.stringify( kafka_body ) );
+            //KafkaServer.producer( 'INS_MSA_INS_TR_INSPECTION_GENBA', JSON.stringify( kafka_body ) );
         } );
 
         res.send( {
@@ -186,7 +186,7 @@
                     DLTUR: data.DELETE_USER,
                     DLTTM: data.DELETE_TIME
                 };
-                KafkaServer.producer( 'INS_MSA_INS_TR_TRACK_INSPECTION', JSON.stringify( kafka_body ) );
+                //KafkaServer.producer( 'INS_MSA_INS_TR_TRACK_INSPECTION', JSON.stringify( kafka_body ) );
             } )
             console.log( 'length: ' + --length );
             totalSkip += 3000;
@@ -225,7 +225,7 @@
         //         DLTUR: data.DELETE_USER,
         //         DLTTM: data.DELETE_TIME
         //     };
-		// 	KafkaServer.producer( 'INS_MSA_INS_TR_TRACK_INSPECTION', JSON.stringify( kafka_body ) );
+		// 	//KafkaServer.producer( 'INS_MSA_INS_TR_TRACK_INSPECTION', JSON.stringify( kafka_body ) );
         // } )
         
     }
