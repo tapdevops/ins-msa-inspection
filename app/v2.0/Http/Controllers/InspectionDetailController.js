@@ -81,7 +81,7 @@
 							DLTUR: "",
 							DLTTM: 0	
 						}
-						KafkaServer.producer( 'INS_MSA_INS_TR_BLOCK_INSPECTION_D', JSON.stringify( kafka_body ) );	
+						// KafkaServer.producer( 'INS_MSA_INS_TR_BLOCK_INSPECTION_D', JSON.stringify( kafka_body ) );	
 					}
 
 					const set_log = new InspectionDLogModel( {
