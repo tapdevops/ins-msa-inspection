@@ -125,7 +125,9 @@
 					DLTUR: "",
 					DLTTM: 0	
 				}
-				//KafkaServer.producer( 'INS_MSA_INS_TR_BLOCK_INSPECTION_H', JSON.stringify( kafka_body ) );	
+				if (config.app.env != 'dev') {
+					KafkaServer.producer( 'INS_MSA_INS_TR_BLOCK_INSPECTION_H', JSON.stringify( kafka_body ) );	
+				}
 			}
 
 			// Insert Block Inspection H Log
