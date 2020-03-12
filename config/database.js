@@ -11,7 +11,7 @@
 module.exports = {
 	inspection: {
 		dev: {
-			url: 'mongodb://s_inspeksi:s_inspeksi@dbappdev.tap-agri.net:4848/s_inspeksi?authSource=s_inspeksi',
+			url: 'mongodb://s_inspeksi:s_inspeksi@dbappdev.tap-agri.com:4848/s_inspeksi?authSource=s_inspeksi',
 			ssl: false
 		},
 		qa: {
