@@ -227,7 +227,6 @@
         //     };
 		// 	//KafkaServer.producer( 'INS_MSA_INS_TR_TRACK_INSPECTION', JSON.stringify( kafka_body ) );
         // } )
-        
     }
     exports.find_by_month = async ( req, res ) => {
         let start = req.params.month;

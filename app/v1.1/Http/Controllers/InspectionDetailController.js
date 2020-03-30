@@ -28,6 +28,7 @@
 	  * --------------------------------------------------------------------
 	*/
  	exports.create = ( req, res ) => {
+
 		if ( !req.body.INSERT_TIME ) {
 			req.body.INSERT_TIME = 'now';
 		}

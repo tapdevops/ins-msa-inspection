@@ -29,7 +29,6 @@
 	 */
 	exports.create = async ( req, res ) => {
 		var auth = req.auth;
-
 		// Check Block Inspection Code, jika sudah ada maka returnnya true.
 		var check_inspeksi = await InspectionHModel.findOne( { "BLOCK_INSPECTION_CODE": req.body.BLOCK_INSPECTION_CODE } ).count();
 		if ( check_inspeksi > 0 ) {
@@ -158,7 +157,7 @@
 				} );
 			} ).catch( err => {
 				res.send( {
-					status: false,
+					status: true,
 					message: config.app.error_message.create_500 + ' - 2',
 					data: {}
 				} );

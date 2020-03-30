@@ -58,7 +58,6 @@
 				insert_user: summary.INSERT_USER,
 				insert_time: summary.INSERT_TIME
 			}
-			
 			SummaryWeeklyModel.findOneAndUpdate( 
 				{
 					INSERT_USER: req.auth.USER_AUTH_CODE,
