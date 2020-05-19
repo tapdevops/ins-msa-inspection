@@ -80,6 +80,7 @@ var Server = App.listen(parseInt(config.app.port[config.app.env]), () => {
 	console.log("\tService \t: " + config.app.name + " (" + config.app.env + ")");
 	console.log("\tPort \t\t: " + config.app.port[config.app.env]);
 });
+Server.timeout(5 * 60 * 1000);
 
 /*
 |--------------------------------------------------------------------------
