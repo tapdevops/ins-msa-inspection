@@ -19,7 +19,7 @@ const Express = require('express');
 const Mongoose = require('mongoose');
 const timeout = require('connect-timeout');
 const CronJob = require('cron').CronJob;
-
+const timeout = require('connect-timeout');
 //Kernel Model
 const Kernel = require(_directory_base + '/app/v2.0/Console/Kernel.js');
 
@@ -73,14 +73,16 @@ Mongoose.connect(config.database.url, {
 });
 
 // Server Running Message
-var Server = App.listen(parseInt(config.app.port[config.app.env]), () => {
+App.listen(parseInt(config.app.port[config.app.env]), () => {
 	Server.timeout = 120 * 60 * 1000;
 	console.log("Server :");
 	console.log("\tStatus \t\t: OK");
 	console.log("\tService \t: " + config.app.name + " (" + config.app.env + ")");
 	console.log("\tPort \t\t: " + config.app.port[config.app.env]);
 });
-Server.timeout(5 * 60 * 1000);
+
+//set timeout 5 minutes
+App.use(timeout('300s'))
 
 /*
 |--------------------------------------------------------------------------
