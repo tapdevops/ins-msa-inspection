@@ -30,18 +30,34 @@ const KafkaErrorLog = require( _directory_base + '/app/v2.0/Http/Models/KafkaErr
 	class KafkaServer {
 		async producer(topic, message) {
 			// Producing
-			await producer.connect();
-			await producer.send({
-				topic: topic,
-				messages: [
-					{ value: message },
-				],
-				retry: {
-					initialRetryTime: 100,
-					retries: 5
-				}
-			});
-			await producer.disconnect();
+			try {
+				await producer.connect();
+				await producer.send({
+					topic: topic,
+					messages: [
+						{ value: message },
+					],
+					retry: {
+						initialRetryTime: 100,
+						retries: 5
+					}
+				});
+				console.log( '[KAFKA PRODUCER] - Broker Update success.' );
+			} catch (error) {
+				console.log( '[KAFKA PRODUCER] - Connection Error.' );
+
+				//throw err;
+				let data = JSON.parse( message );
+
+				let set = new KafkaErrorLog( {
+					TR_CODE: data.BINCD ? data.BINCD : data.BINCH ? data.BINCH : data.TRINC ? data.TRINC : null,
+					TOPIC: topic,
+					INSERT_TIME: data.INSTM ? data.INSTM : 0
+				} );
+				console.log( set );
+				set.save();
+				console.log( `simpan ke TR_KAFKA_ERROR_LOGS!` );
+			}
 		}
 		/*producer ( topic, messages ) {
 			// Class
