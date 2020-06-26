@@ -8,6 +8,9 @@ const RoutesVersioning = require('express-routes-versioning')();
 
 // Controllers
 const Controllers = {
+	v_2_1: {
+		ExportController: require(_directory_base + '/app/v2.1/Http/Controllers/ExportController.js'),
+	},
 	v_2_0: {
 		ExportController: require(_directory_base + '/app/v2.0/Http/Controllers/ExportController.js'),
 		ExportKafkaController: require(_directory_base + '/app/v2.0/Http/Controllers/ExportKafkaController.js'),
@@ -86,6 +89,14 @@ module.exports = (app) => {
 			}
 		})
 	});
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Versi 2.1
+	 |--------------------------------------------------------------------------
+	 */
+	//export-premi
+	app.get('/api/v2.1/export/premi/:first_date/:end_date', Middleware.v_2_0.VerifyToken, Controllers.v_2_1.ExportController.premi);
 
 	/*
 	 |--------------------------------------------------------------------------
