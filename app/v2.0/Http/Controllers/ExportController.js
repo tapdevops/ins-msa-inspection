@@ -34,6 +34,22 @@
 					"as": "DETAIL"
 				}
 			},
+ 			{
+				"$lookup": {
+					"from": "TR_TRACK_INSPECTION",
+					"localField": "BLOCK_INSPECTION_CODE",
+					"foreignField": "BLOCK_INSPECTION_CODE",
+					"as": "TRACK"
+				}
+			},
+ 			{
+				"$lookup": {
+					"from": "TR_INSPECTION_GENBA",
+					"localField": "BLOCK_INSPECTION_CODE",
+					"foreignField": "BLOCK_INSPECTION_CODE",
+					"as": "GENBA"
+				}
+			},
 			{
 				"$project": {
 					"BLOCK_INSPECTION_CODE": 1,
@@ -57,7 +73,21 @@
 					"_id": 0,
 					"DETAIL.BLOCK_INSPECTION_CODE_D" : 1,
 					"DETAIL.CONTENT_INSPECTION_CODE" : 1,
-					"DETAIL.VALUE" : 1
+					"DETAIL.VALUE" : 1,
+					"TRACK.TRACK_INSPECTION_CODE": 1,
+					"TRACK.BLOCK_INSPECTION_CODE": 1,
+					"TRACK.DATE_TRACK": 1,
+					"TRACK.LAT_TRACK": 1,
+					"TRACK.LONG_TRACK": 1,
+					"TRACK.SYNC_TIME": 1,
+					"TRACK.INSERT_USER": 1,
+					"TRACK.INSERT_TIME": 1,
+					"TRACK.UPDATE_TIME": 1,
+					"TRACK.UPDATE_USER": 1,
+					"TRACK.DELETE_USER": 1,
+					"TRACK.DELETE_TIME": 1,
+					"GENBA.BLOCK_INSPECTION_CODE": 1,
+					"GENBA.USER": 1
 				}
 			},
 			{
