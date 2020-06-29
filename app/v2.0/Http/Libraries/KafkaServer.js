@@ -45,7 +45,7 @@ const KafkaErrorLog = require( _directory_base + '/app/v2.0/Http/Models/KafkaErr
 				console.log( '[KAFKA PRODUCER] - Broker Update success.' );
 			} catch (error) {
 				console.log( '[KAFKA PRODUCER] - Connection Error.' );
-
+				console.log(error);
 				//throw err;
 				let data = JSON.parse( message );
 
