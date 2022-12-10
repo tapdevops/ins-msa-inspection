@@ -10,7 +10,7 @@
 		"connect-timeout": "^1.9.0",
 		"date-and-time": "^0.6.3",
 		"dateformat": "^3.0.3",
-		"express": "^4.14.1",
+		"express": "^4.17.3",
 		"express-routes-versioning": "^1.0.1",
 		"ferds-validator": "^1.0.4",
 		"jsonwebtoken": "^8.4.0",
